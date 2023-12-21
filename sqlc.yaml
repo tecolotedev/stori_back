@@ -18,6 +18,6 @@ sql:
     schema: "./db/migrations"
     gen:
       go:
-        package: "db"
-        out: "db/code"
+        package: "sqlc_code"
+        out: "db/sqlc_code"
         sql_package: "pgx/v5"
