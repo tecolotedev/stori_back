@@ -11,7 +11,7 @@ Table users {
 
 Table accounts {
   id integer [primary key]
-  balance double [default: 0]
+  balance float [default: 0]
   currency varchar [not null]
   created_at timestamp [default: `now()`]
   user_id integer
@@ -19,7 +19,7 @@ Table accounts {
 
 Table transfers {
   id integer [primary key]
-  amount double [not null]
+  amount float [not null]
   reason varchar
   account_id integer
 }

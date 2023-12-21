@@ -32,3 +32,9 @@ $ echo "deb https://packagecloud.io/golang-migrate/migrate/ubuntu/ $(lsb_release
 $ apt-get update
 $ apt-get install -y migrate
 ```
+
+## Migrate tables with golang-migrate
+
+```bash
+	migrate -path db/migrations -database "postgresql://admin:secret@127.0.0.1:5432/stori_db" --verbose up
+```
