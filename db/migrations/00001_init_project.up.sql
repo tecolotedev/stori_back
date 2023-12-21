@@ -3,7 +3,6 @@ CREATE TABLE "users" (
   "username" varchar NOT NULL,
   "password" varchar NOT NULL,
   "email" varchar NOT NULL,
-  "role" varchar,
   "created_at" timestamp DEFAULT (now())
 );
 
