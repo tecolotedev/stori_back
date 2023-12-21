@@ -1,17 +1,15 @@
-
-
 Table users {
   id integer [primary key]
   username varchar [not null]
   password  varchar [not null]
-  email varchar [not null]
+  email varchar [not null, unique]
   role varchar
   created_at timestamp [default: `now()`]
 }
 
 Table accounts {
   id integer [primary key]
-  balance float [default: 0]
+  balance double [default: 0]
   currency varchar [not null]
   created_at timestamp [default: `now()`]
   user_id integer
@@ -19,12 +17,10 @@ Table accounts {
 
 Table transfers {
   id integer [primary key]
-  amount float [not null]
+  amount double [not null]
   reason varchar
   account_id integer
 }
 
 Ref: accounts.user_id > users.id // many-to-one
 Ref: transfers.account_id > accounts.id // many-to-one
-
-

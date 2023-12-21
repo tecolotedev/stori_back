@@ -7,6 +7,8 @@ package sqlc_code
 
 import (
 	"context"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const createUser = `-- name: CreateUser :one
@@ -17,7 +19,7 @@ INSERT INTO users (
 )
 VALUES (
     $1, $2, $3
-) RETURNING id, username, password, email, created_at
+) RETURNING id,username,email,created_at
 `
 
 type CreateUserParams struct {
@@ -26,13 +28,19 @@ type CreateUserParams struct {
 	Email    string
 }
 
-func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
+type CreateUserRow struct {
+	ID        int32
+	Username  string
+	Email     string
+	CreatedAt pgtype.Timestamp
+}
+
+func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (CreateUserRow, error) {
 	row := q.db.QueryRow(ctx, createUser, arg.Username, arg.Password, arg.Email)
-	var i User
+	var i CreateUserRow
 	err := row.Scan(
 		&i.ID,
 		&i.Username,
-		&i.Password,
 		&i.Email,
 		&i.CreatedAt,
 	)
@@ -41,7 +49,7 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 
 const getUser = `-- name: GetUser :one
 SELECT id, username, password, email, created_at FROM users
-where email =$1 LIMIT 1
+where email =$1
 `
 
 func (q *Queries) GetUser(ctx context.Context, email string) (User, error) {

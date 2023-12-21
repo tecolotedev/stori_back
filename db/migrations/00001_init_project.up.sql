@@ -1,24 +1,24 @@
 CREATE TABLE "users" (
-  "id" integer PRIMARY KEY,
-  "username" varchar NOT NULL,
-  "password" varchar NOT NULL,
-  "email" varchar NOT NULL,
-  "created_at" timestamp DEFAULT (now())
+  "id" SERIAL PRIMARY KEY,
+  "username" VARCHAR NOT NULL,
+  "password" VARCHAR NOT NULL,
+  "email" VARCHAR UNIQUE NOT NULL,
+  "created_at" TIMESTAMP DEFAULT (now())
 );
 
 CREATE TABLE "accounts" (
-  "id" integer PRIMARY KEY,
-  "balance" float DEFAULT 0,
-  "currency" varchar NOT NULL,
-  "created_at" timestamp DEFAULT (now()),
-  "user_id" integer
+  "id" SERIAL PRIMARY KEY,
+  "balance" FLOAT DEFAULT 0,
+  "currency" VARCHAR NOT NULL,
+  "created_at" TIMESTAMP DEFAULT (now()),
+  "user_id" INTEGER
 );
 
 CREATE TABLE "transfers" (
-  "id" integer PRIMARY KEY,
-  "amount" float NOT NULL,
-  "reason" varchar,
-  "account_id" integer
+  "id" SERIAL PRIMARY KEY,
+  "amount" FLOAT NOT NULL,
+  "reason" VARCHAR,
+  "account_id" INTEGER
 );
 
 ALTER TABLE "accounts" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");

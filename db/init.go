@@ -35,6 +35,4 @@ func InitDb() {
 	}
 
 	Queries = sqlc_code.New(conn)
-
-	defer conn.Close(ctx)
 }

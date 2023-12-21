@@ -6,8 +6,8 @@ INSERT INTO users (
 )
 VALUES (
     $1, $2, $3
-) RETURNING *;
+) RETURNING id,username,email,created_at;
 
 -- name: GetUser :one
 SELECT * FROM users
-where email =$1 LIMIT 1;
+where email =$1;

@@ -6,5 +6,6 @@ import (
 )
 
 func SetUpUserRoutes(router fiber.Router) {
+	router.Post("/login", controllers.Login)
 	router.Post("/user", controllers.CreateUser)
 }
