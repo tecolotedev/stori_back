@@ -1,7 +1,22 @@
 package main
 
-import "fmt"
+import (
+	"log"
+
+	"github.com/tecolotedev/stori_back/config"
+
+	"github.com/gofiber/fiber/v2"
+)
 
 func main() {
-	fmt.Println("hello world")
+	config.SetUpConfig()
+
+	app := fiber.New()
+
+	app.Get("/", func(c *fiber.Ctx) error {
+		return c.SendString("Hello, World!")
+	})
+
+	log.Fatal((app.Listen(":" + config.EnvVars.PORT)))
+
 }
