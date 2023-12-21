@@ -5,6 +5,7 @@ import (
 
 	"github.com/tecolotedev/stori_back/config"
 	"github.com/tecolotedev/stori_back/db"
+	"github.com/tecolotedev/stori_back/routes"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -19,6 +20,8 @@ func main() {
 		return c.SendString("Hello, World!")
 
 	})
+
+	routes.SetUpRoutes(app)
 
 	log.Fatal((app.Listen(":" + config.EnvVars.PORT)))
 
