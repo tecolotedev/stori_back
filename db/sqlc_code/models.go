@@ -21,6 +21,7 @@ type Transfer struct {
 	Amount    float64
 	Reason    pgtype.Text
 	AccountID pgtype.Int4
+	CreatedAt pgtype.Timestamp
 }
 
 type User struct {

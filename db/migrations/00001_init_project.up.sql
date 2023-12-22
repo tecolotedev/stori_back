@@ -18,7 +18,8 @@ CREATE TABLE "transfers" (
   "id" SERIAL PRIMARY KEY,
   "amount" FLOAT NOT NULL,
   "reason" VARCHAR,
-  "account_id" INTEGER
+  "account_id" INTEGER,
+  "created_at" TIMESTAMP NOT NULL
 );
 
 ALTER TABLE "accounts" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");

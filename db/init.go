@@ -11,6 +11,7 @@ import (
 )
 
 var Queries *sqlc_code.Queries
+var Conn *pgx.Conn
 
 func InitDb() {
 	ctx := context.Background()
@@ -35,4 +36,27 @@ func InitDb() {
 	}
 
 	Queries = sqlc_code.New(conn)
+	Conn = conn
+}
+
+func MakeTx(ctx context.Context, transactions func() error) error {
+
+	tx, err := Conn.BeginTx(ctx, pgx.TxOptions{})
+
+	if err != nil {
+		return fmt.Errorf("error init Tx")
+	}
+
+	tx.Begin(ctx)
+
+	err = transactions()
+
+	if err != nil {
+		if rbError := tx.Rollback(ctx); rbError != nil {
+			return fmt.Errorf("tx err: %v, rb err: %v", err, rbError)
+		}
+		return err
+	}
+	return tx.Commit(ctx)
+
 }

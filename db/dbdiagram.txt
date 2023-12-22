@@ -20,6 +20,7 @@ Table transfers {
   amount double [not null]
   reason varchar
   account_id integer
+  created_at timestamp [not null]
 }
 
 Ref: accounts.user_id > users.id // many-to-one

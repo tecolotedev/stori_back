@@ -9,6 +9,7 @@ import (
 func SetUpAccountRoutes(router fiber.Router) {
 	router.Use(middlewares.Auth)
 	router.Get("/account", controllers.ListAccounts)
-	router.Get("/account/:account_id", controllers.GetAccount)
 	router.Post("/account", controllers.CreateAccount)
+	router.Get("/account/:account_id", controllers.GetAccount)
+	router.Put("/account/:account_id", controllers.UpdateBalanceAccount)
 }

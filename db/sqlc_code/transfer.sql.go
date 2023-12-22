@@ -15,32 +15,40 @@ const createTransfer = `-- name: CreateTransfer :one
 INSERT INTO transfers (
   amount,
   reason,
+  created_at,
   account_id
 ) VALUES (
-  $1, $2, $3
-) RETURNING id, amount, reason, account_id
+  $1, $2, $3, $4
+) RETURNING id, amount, reason, account_id, created_at
 `
 
 type CreateTransferParams struct {
 	Amount    float64
 	Reason    pgtype.Text
+	CreatedAt pgtype.Timestamp
 	AccountID pgtype.Int4
 }
 
 func (q *Queries) CreateTransfer(ctx context.Context, arg CreateTransferParams) (Transfer, error) {
-	row := q.db.QueryRow(ctx, createTransfer, arg.Amount, arg.Reason, arg.AccountID)
+	row := q.db.QueryRow(ctx, createTransfer,
+		arg.Amount,
+		arg.Reason,
+		arg.CreatedAt,
+		arg.AccountID,
+	)
 	var i Transfer
 	err := row.Scan(
 		&i.ID,
 		&i.Amount,
 		&i.Reason,
 		&i.AccountID,
+		&i.CreatedAt,
 	)
 	return i, err
 }
 
 const getTransfer = `-- name: GetTransfer :one
-SELECT id, amount, reason, account_id FROM transfers
+SELECT id, amount, reason, account_id, created_at FROM transfers
 WHERE id = $1 LIMIT 1
 `
 
@@ -52,12 +60,13 @@ func (q *Queries) GetTransfer(ctx context.Context, id int32) (Transfer, error) {
 		&i.Amount,
 		&i.Reason,
 		&i.AccountID,
+		&i.CreatedAt,
 	)
 	return i, err
 }
 
 const listTransfers = `-- name: ListTransfers :many
-SELECT id, amount, reason, account_id FROM transfers
+SELECT id, amount, reason, account_id, created_at FROM transfers
 WHERE 
     account_id = $1
 ORDER BY id
@@ -85,6 +94,7 @@ func (q *Queries) ListTransfers(ctx context.Context, arg ListTransfersParams) ([
 			&i.Amount,
 			&i.Reason,
 			&i.AccountID,
+			&i.CreatedAt,
 		); err != nil {
 			return nil, err
 		}
