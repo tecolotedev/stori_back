@@ -13,6 +13,8 @@ var (
 	ErrInvalidToken = errors.New("token is invalid")
 )
 
+const symmetricKey = "abcd1234"
+
 // Payload contains the payload data of the token
 type Payload struct {
 	ID        uuid.UUID `json:"id"`
@@ -35,14 +37,45 @@ func CreateToken(userId int32, duration time.Duration) (string, error) {
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, payload)
-	return token.SignedString([]byte(RandomString(32)))
+	return token.SignedString([]byte(symmetricKey))
 }
 
 // Valid checks if the token payload is valid or not
 func (payload *Payload) Valid() error {
+
 	if time.Now().After(payload.ExpiredAt) {
 		return ErrExpiredToken
 	}
 
 	return nil
+}
+
+// VerifyToken checks if the token is valid or not
+func VerifyToken(token string) (*Payload, error) {
+	keyFunc := func(token *jwt.Token) (interface{}, error) {
+		_, ok := token.Method.(*jwt.SigningMethodHMAC)
+		if !ok {
+			return nil, ErrInvalidToken
+		}
+		return []byte(symmetricKey), nil
+	}
+
+	jwtToken, err := jwt.ParseWithClaims(token, &Payload{}, keyFunc)
+
+	if err != nil {
+		verr, ok := err.(*jwt.ValidationError)
+
+		if ok && errors.Is(verr.Inner, ErrExpiredToken) {
+			return nil, ErrExpiredToken
+		}
+		return nil, ErrInvalidToken
+	}
+
+	payload, ok := jwtToken.Claims.(*Payload)
+
+	if !ok {
+		return nil, ErrInvalidToken
+	}
+
+	return payload, nil
 }
