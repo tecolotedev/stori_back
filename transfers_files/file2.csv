@@ -1,0 +1,6 @@
+id,date,transaction,reason
+0,2023-02-01,-60.5,payment3
+1,2023-02-02,-20.3,food
+2,2023-02-03,+50.46,internet
+3,2023-02-04,-10,education
+4,2023-02-05,-20,payment3
