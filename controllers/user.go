@@ -53,16 +53,24 @@ func Login(c *fiber.Ctx) error {
 		return err
 	}
 
-	cookie := fiber.Cookie{
-		Name:  "access_token",
-		Value: token,
-		Path:  "/",
-	}
+	cookie := new(fiber.Cookie)
+	cookie.Name = "access_token"
+	cookie.Value = token
+	cookie.Expires = time.Now().Add(24 * time.Hour)
 
-	c.Cookie(&cookie)
+	c.Cookie(cookie)
 
 	return c.JSON(userResponse)
 
+}
+
+func VerifyToken(c *fiber.Ctx) error {
+	accessToken := c.Cookies("access_token")
+	payload, err := utils.VerifyToken(accessToken)
+	if err != nil {
+		return err
+	}
+	return c.JSON(payload)
 }
 
 type createUserRequest struct {
