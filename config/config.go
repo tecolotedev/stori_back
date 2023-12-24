@@ -15,6 +15,11 @@ type EnvVarsType struct {
 	DB_PASSWORD string
 	DB_NAME     string
 	IS_LOCAL    bool
+
+	EMAIL_HOST     string
+	EMAIL_PORT     string
+	EMAIL_USER     string
+	EMAIL_PASSWORD string
 }
 
 var EnvVars EnvVarsType
@@ -29,7 +34,9 @@ func SetUpConfig() {
 	if port == "" {
 		port = "8000"
 	}
+	EnvVars.PORT = port
 
+	//connection to postgres database
 	dbHost := os.Getenv("DB_HOST")
 	dbUser := os.Getenv("DB_USER")
 	dbPassword := os.Getenv("DB_PASSWORD")
@@ -40,12 +47,21 @@ func SetUpConfig() {
 		isLocal = true
 	}
 
-	EnvVars.PORT = port
-
 	EnvVars.DB_HOST = dbHost
 	EnvVars.DB_USER = dbUser
 	EnvVars.DB_PASSWORD = dbPassword
 	EnvVars.DB_NAME = dbName
 	EnvVars.IS_LOCAL = isLocal
+
+	//connection to mailtrap
+	emailHost := os.Getenv("EMAIL_HOST")
+	emailPassword := os.Getenv("EMAIL_PASSWORD")
+	emailUser := os.Getenv("EMAIL_USER")
+	emailPort := os.Getenv("EMAIL_PORT")
+
+	EnvVars.EMAIL_HOST = emailHost
+	EnvVars.EMAIL_PASSWORD = emailPassword
+	EnvVars.EMAIL_USER = emailUser
+	EnvVars.EMAIL_PORT = emailPort
 
 }
