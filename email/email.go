@@ -4,8 +4,9 @@ import (
 	"bytes"
 	"fmt"
 	"html/template"
-	"net/smtp"
 	"os"
+
+	"github.com/go-mail/mail"
 )
 
 func SendEmail() {
@@ -13,12 +14,10 @@ func SendEmail() {
 	user := "7baf9402d99a97"           //config.EnvVars.EMAIL_USER
 	password := "2bf0a481a09bb7"       //config.EnvVars.EMAIL_PASSWORD
 	host := "sandbox.smtp.mailtrap.io" //config.EnvVars.EMAIL_HOST
-	port := "2525"                     //config.EnvVars.EMAIL_PORT
+	port := 2525                       //config.EnvVars.EMAIL_PORT
 
 	from := "hello@tecolotedev.com"
-	to := []string{
-		"wayaksdron@gmail.com",
-	}
+	to := "wayaksdron@gmail.com"
 
 	f, err := os.ReadFile("email/template.html") // just pass the file name
 
@@ -46,16 +45,20 @@ func SendEmail() {
 		fmt.Println(err)
 	}
 
-	msg := []byte("From: hello@tecolotedev.com\r\n" +
-		"To: wayaksdron@gmail.com\r\n" +
-		"Subject: Test mail\r\n\r\n" + bodyContentBuffer.String())
+	m := mail.NewMessage()
 
-	auth := smtp.PlainAuth("", user, password, host)
+	m.SetHeader("From", from)
+	m.SetHeader("To", to)
+	m.SetHeader("Subject", "Hello!")
+	m.SetBody("text/html", bodyContentBuffer.String())
+	m.Attach("lolcat.jpg")
 
-	err = smtp.SendMail(host+":"+port, auth, from, to, msg)
+	d := mail.NewDialer(host, port, user, password)
 
-	if err != nil {
+	if err := d.DialAndSend(m); err != nil {
+
 		fmt.Println(err)
+
 	}
 
 	fmt.Println("Email sent successfully")

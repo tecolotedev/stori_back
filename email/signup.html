@@ -1,0 +1,51 @@
+<!-- template.html -->
+<!DOCTYPE html>
+<html>
+    <head>
+
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100;400&display=swap');
+            * {
+                border:0px;
+                margin: 0px;
+                font-family: 'Roboto', sans-serif;
+
+            }
+            #img-stori-logo{
+                height: 80px;
+            }
+
+            body{
+                background: #003a40;
+            }
+
+            #greeting-container, #button-container{
+                display: flex;
+                justify-content: center;
+                color:white
+            }
+            button{
+                margin-top: 10px;
+                padding: 10px;
+                border-radius: 10px;
+                background: #00d180;
+                color: #003a40;
+                cursor: pointer;
+            }
+         
+
+
+        </style>
+    </head>
+    <body>
+        <div>
+            <img id="img-stori-logo" src="https://res.cloudinary.com/dfl1tke7p/image/upload/f_auto,q_auto/tyzmnjksxy6usxgpzpoe" alt="logo stori" />
+        </div>
+        <div id="greeting-container">
+            <p>Hey {{.Name}} we are exited to have you in stori, please confirm you account clicking the button below: </p>
+        </div>
+        <div id="button-container">
+           <a href="http://localhost:3000/api/verifyAccount?id={{.ID}}" target="_blank"><button>Verify Account</button></a>
+        </div>
+    </body>
+</html>
