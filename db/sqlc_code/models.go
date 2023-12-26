@@ -30,4 +30,5 @@ type User struct {
 	Password  string
 	Email     string
 	CreatedAt pgtype.Timestamp
+	Verified  pgtype.Bool
 }

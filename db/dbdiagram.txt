@@ -4,6 +4,7 @@ Table users {
   password  varchar [not null]
   email varchar [not null, unique]
   role varchar
+  verified boolean [default: false]
   created_at timestamp [default: `now()`]
 }
 

@@ -10,4 +10,9 @@ VALUES (
 
 -- name: GetUser :one
 SELECT * FROM users
-where email =$1;
+where email = $1;
+
+-- name: VerifyUser :execrows
+UPDATE users
+SET verified = true
+WHERE id = $1;

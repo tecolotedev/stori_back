@@ -48,8 +48,8 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (CreateU
 }
 
 const getUser = `-- name: GetUser :one
-SELECT id, username, password, email, created_at FROM users
-where email =$1
+SELECT id, username, password, email, created_at, verified FROM users
+where email = $1
 `
 
 func (q *Queries) GetUser(ctx context.Context, email string) (User, error) {
@@ -61,6 +61,21 @@ func (q *Queries) GetUser(ctx context.Context, email string) (User, error) {
 		&i.Password,
 		&i.Email,
 		&i.CreatedAt,
+		&i.Verified,
 	)
 	return i, err
+}
+
+const verifyUser = `-- name: VerifyUser :execrows
+UPDATE users
+SET verified = true
+WHERE id = $1
+`
+
+func (q *Queries) VerifyUser(ctx context.Context, id int32) (int64, error) {
+	result, err := q.db.Exec(ctx, verifyUser, id)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
