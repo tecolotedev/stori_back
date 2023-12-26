@@ -66,6 +66,25 @@ func (q *Queries) GetUser(ctx context.Context, email string) (User, error) {
 	return i, err
 }
 
+const getUserById = `-- name: GetUserById :one
+SELECT id, username, password, email, created_at, verified FROM users
+where id = $1
+`
+
+func (q *Queries) GetUserById(ctx context.Context, id int32) (User, error) {
+	row := q.db.QueryRow(ctx, getUserById, id)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.Username,
+		&i.Password,
+		&i.Email,
+		&i.CreatedAt,
+		&i.Verified,
+	)
+	return i, err
+}
+
 const verifyUser = `-- name: VerifyUser :execrows
 UPDATE users
 SET verified = true

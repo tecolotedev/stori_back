@@ -12,6 +12,10 @@ VALUES (
 SELECT * FROM users
 where email = $1;
 
+-- name: GetUserById :one
+SELECT * FROM users
+where id = $1;
+
 -- name: VerifyUser :execrows
 UPDATE users
 SET verified = true

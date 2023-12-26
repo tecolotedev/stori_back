@@ -12,6 +12,8 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/tecolotedev/stori_back/db"
 	"github.com/tecolotedev/stori_back/db/sqlc_code"
+	"github.com/tecolotedev/stori_back/email"
+	"github.com/tecolotedev/stori_back/utils"
 )
 
 func ListAccounts(c *fiber.Ctx) error {
@@ -19,12 +21,12 @@ func ListAccounts(c *fiber.Ctx) error {
 
 	limit, err := strconv.Atoi(c.Query("limit", "10"))
 	if err != nil {
-		return fmt.Errorf("Wrong limit value")
+		return utils.SendError(c, "Error in request", fiber.StatusBadRequest)
 	}
 
 	offset, err := strconv.Atoi(c.Query("offset", "0"))
 	if err != nil {
-		return fmt.Errorf("Wrong offset value")
+		return utils.SendError(c, "Error in request", fiber.StatusBadRequest)
 	}
 
 	params := sqlc_code.ListAccountsParams{
@@ -35,8 +37,7 @@ func ListAccounts(c *fiber.Ctx) error {
 
 	accounts, err := db.Queries.ListAccounts(context.Background(), params)
 	if err != nil {
-		log.Println(err)
-		return err
+		return utils.SendError(c, "Error processing, please try it later", fiber.StatusInternalServerError)
 	}
 
 	return c.JSON(accounts)
@@ -48,17 +49,16 @@ func GetAccount(c *fiber.Ctx) error {
 
 	accountId, err := strconv.Atoi(c.Params("account_id"))
 	if err != nil {
-		return fmt.Errorf("Wrong account_id value")
+		return utils.SendError(c, "Error in request", fiber.StatusBadRequest)
 	}
 
 	account, err := db.Queries.GetAccount(context.Background(), int32(accountId))
 	if err != nil {
-		log.Println(err)
-		return err
+		return utils.SendError(c, "Account doesn't exist", fiber.StatusInternalServerError)
 	}
 
 	if account.UserID.Int32 != userId {
-		return fmt.Errorf("User not authorized to access this account")
+		return utils.SendError(c, "User not authorized to access this account", fiber.StatusBadRequest)
 	}
 
 	return c.JSON(account)
@@ -76,8 +76,7 @@ func CreateAccount(c *fiber.Ctx) error {
 	createAccountBody := new(createAccountRequest)
 
 	if err := c.BodyParser(createAccountBody); err != nil {
-		log.Println(err)
-		return err
+		return utils.SendError(c, "Error in request", fiber.StatusBadRequest)
 	}
 
 	params := sqlc_code.CreateAccountParams{
@@ -88,8 +87,7 @@ func CreateAccount(c *fiber.Ctx) error {
 
 	accountCreated, err := db.Queries.CreateAccount(context.Background(), params)
 	if err != nil {
-		log.Println(err)
-		return err
+		return utils.SendError(c, "Error processing, please try it later", fiber.StatusInternalServerError)
 	}
 
 	return c.JSON(accountCreated)
@@ -102,27 +100,29 @@ func UpdateBalanceAccount(c *fiber.Ctx) error {
 
 	accountId, err := strconv.Atoi(c.Params("account_id"))
 	if err != nil {
-		return fmt.Errorf("Wrong account_id value")
+		return utils.SendError(c, "Error in request", fiber.StatusBadRequest)
 	}
 
 	file, err := c.FormFile("file")
 	if err != nil {
-		log.Println(err)
-		return fmt.Errorf("error with the file")
+		return utils.SendError(c, "Error with the file", fiber.StatusBadRequest)
+
 	}
 
 	open, err := file.Open()
 	if err != nil {
-		log.Println(err)
-		return fmt.Errorf("error with the file")
+		return utils.SendError(c, "Error with the file", fiber.StatusBadRequest)
 	}
 
 	csvReader := csv.NewReader(open)
 
 	data, err := csvReader.ReadAll()
 	if err != nil {
-		log.Fatal(err)
+		return utils.SendError(c, "Error processing, please try it later", fiber.StatusInternalServerError)
 	}
+
+	var records []email.Record
+
 	for i, line := range data {
 		if i > 0 { // omit header line
 			date, err := time.Parse("2006-01-02", line[1])
@@ -169,6 +169,8 @@ func UpdateBalanceAccount(c *fiber.Ctx) error {
 					fmt.Println("err UpdateAccount: ", err)
 					return err
 				}
+				record := email.Record{Date: line[1], Transaction: amount, Reason: reason}
+				records = append(records, record)
 				return nil
 			})
 			fmt.Println("err MakeTx: ", err)
@@ -176,10 +178,15 @@ func UpdateBalanceAccount(c *fiber.Ctx) error {
 		}
 	}
 
+	account, err := db.Queries.GetAccountForUpdate(context.Background(), int32(accountId))
 	if err != nil {
 		return err
 	}
 
-	return c.JSON(fiber.Map{"ok": "created"})
+	user, _ := db.Queries.GetUserById(context.Background(), userId)
+
+	email.SendReportEmail(user.Email, account.Balance.Float64, records)
+
+	return c.JSON(fiber.Map{"ok": "transfered"})
 
 }

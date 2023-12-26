@@ -28,12 +28,12 @@ func Login(c *fiber.Ctx) error {
 	loginBody := new(loginRequest)
 
 	if err := c.BodyParser(loginBody); err != nil {
-		return utils.SendError(c, "Bad Entities", fiber.StatusBadRequest)
+		return utils.SendError(c, "Error in request", fiber.StatusBadRequest)
 	}
 
 	user, err := db.Queries.GetUser(context.Background(), loginBody.Email)
 	if err != nil {
-		return err
+		return utils.SendError(c, "Wrong email or password", fiber.StatusBadRequest)
 	}
 
 	if !user.Verified.Bool {
@@ -42,7 +42,7 @@ func Login(c *fiber.Ctx) error {
 
 	err = utils.CheckPassword(loginBody.Password, user.Password)
 	if err != nil {
-		return err
+		return utils.SendError(c, "Wrong email or password", fiber.StatusBadRequest)
 	}
 
 	userResponse := loginResponse{
@@ -54,7 +54,7 @@ func Login(c *fiber.Ctx) error {
 
 	token, err := utils.CreateToken(user.ID, time.Hour)
 	if err != nil {
-		return err
+		return utils.SendError(c, "Error processing, please try it later", fiber.StatusInternalServerError)
 	}
 
 	cookie := new(fiber.Cookie)
@@ -87,12 +87,12 @@ func Signup(c *fiber.Ctx) error {
 	signupBody := new(signupRequest)
 
 	if err := c.BodyParser(signupBody); err != nil {
-		return err
+		return utils.SendError(c, "Error in request", fiber.StatusBadRequest)
 	}
 
 	hashedPassword, err := utils.HashPassword(signupBody.Password)
 	if err != nil {
-		return err
+		return utils.SendError(c, "Error processing, please try it later", fiber.StatusInternalServerError)
 	}
 
 	params := sqlc_code.CreateUserParams{
@@ -103,8 +103,7 @@ func Signup(c *fiber.Ctx) error {
 
 	userCreated, err := db.Queries.CreateUser(context.Background(), params)
 	if err != nil {
-
-		return err
+		return utils.SendError(c, "Error processing, please try it later", fiber.StatusInternalServerError)
 	}
 
 	email.SendSignupEmail(userCreated.Username, userCreated.ID, userCreated.Email)
