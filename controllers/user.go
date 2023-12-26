@@ -2,12 +2,13 @@ package controllers
 
 import (
 	"context"
-	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/tecolotedev/stori_back/db"
 	"github.com/tecolotedev/stori_back/db/sqlc_code"
+	"github.com/tecolotedev/stori_back/email"
 	"github.com/tecolotedev/stori_back/utils"
 )
 
@@ -27,13 +28,16 @@ func Login(c *fiber.Ctx) error {
 	loginBody := new(loginRequest)
 
 	if err := c.BodyParser(loginBody); err != nil {
-		fmt.Println(err)
-		return fmt.Errorf("bad entities")
+		return utils.SendError(c, "Bad Entities", fiber.StatusBadRequest)
 	}
 
 	user, err := db.Queries.GetUser(context.Background(), loginBody.Email)
 	if err != nil {
 		return err
+	}
+
+	if !user.Verified.Bool {
+		return utils.SendError(c, "Please verify your account", fiber.StatusBadRequest)
 	}
 
 	err = utils.CheckPassword(loginBody.Password, user.Password)
@@ -73,27 +77,27 @@ func VerifyToken(c *fiber.Ctx) error {
 	return c.JSON(payload)
 }
 
-type createUserRequest struct {
+type signupRequest struct {
 	Username string `json:"username" form:"username"`
 	Email    string `json:"email" form:"email"`
 	Password string `json:"password"  form:"password"`
 }
 
-func CreateUser(c *fiber.Ctx) error {
-	newUserBody := new(createUserRequest)
+func Signup(c *fiber.Ctx) error {
+	signupBody := new(signupRequest)
 
-	if err := c.BodyParser(newUserBody); err != nil {
+	if err := c.BodyParser(signupBody); err != nil {
 		return err
 	}
 
-	hashedPassword, err := utils.HashPassword(newUserBody.Password)
+	hashedPassword, err := utils.HashPassword(signupBody.Password)
 	if err != nil {
 		return err
 	}
 
 	params := sqlc_code.CreateUserParams{
-		Username: newUserBody.Username,
-		Email:    newUserBody.Email,
+		Username: signupBody.Username,
+		Email:    signupBody.Email,
 		Password: hashedPassword,
 	}
 
@@ -103,5 +107,22 @@ func CreateUser(c *fiber.Ctx) error {
 		return err
 	}
 
+	email.SendSignupEmail(userCreated.Username, userCreated.ID, userCreated.Email)
+
 	return c.JSON(userCreated)
+}
+
+func VerifyAccount(c *fiber.Ctx) error {
+	id, err := strconv.Atoi(c.Query("id", ""))
+
+	if err != nil {
+		return utils.SendError(c, "Wrong id", fiber.StatusBadRequest)
+	}
+	_, err = db.Queries.VerifyUser(c.Context(), int32(id))
+
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(fiber.Map{"ok": true})
 }

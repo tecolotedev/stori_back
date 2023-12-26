@@ -7,6 +7,7 @@ import (
 
 func SetUpUserRoutes(router fiber.Router) {
 	router.Post("/login", controllers.Login)
-	router.Post("/user", controllers.CreateUser)
+	router.Post("/signup", controllers.Signup)
+	router.Get("/verifyAccount", controllers.VerifyAccount)
 	router.Get("/verifyToken", controllers.VerifyToken)
 }
