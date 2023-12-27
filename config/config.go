@@ -20,6 +20,8 @@ type EnvVarsType struct {
 	EMAIL_PORT     string
 	EMAIL_USER     string
 	EMAIL_PASSWORD string
+
+	FRONT_URL string
 }
 
 var EnvVars EnvVarsType
@@ -64,4 +66,7 @@ func SetUpConfig() {
 	EnvVars.EMAIL_USER = emailUser
 	EnvVars.EMAIL_PORT = emailPort
 
+	//front url
+	frontUrl := os.Getenv("FRONT_URL")
+	EnvVars.FRONT_URL = frontUrl
 }

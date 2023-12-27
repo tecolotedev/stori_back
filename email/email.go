@@ -6,8 +6,10 @@ import (
 	"html/template"
 	"math"
 	"os"
+	"strconv"
 
 	"github.com/go-mail/mail"
+	"github.com/tecolotedev/stori_back/config"
 )
 
 func SendSignupEmail(name string, id int32, to string) {
@@ -23,11 +25,11 @@ func SendSignupEmail(name string, id int32, to string) {
 	var bodyContentBuffer bytes.Buffer
 
 	err = tmpl.Execute(&bodyContentBuffer, struct {
-		Name string
-		ID   int32
+		Name      string
+		UrlSignup string
 	}{
-		Name: name,
-		ID:   id,
+		Name:      name,
+		UrlSignup: config.EnvVars.FRONT_URL + "/verifyAccount?id=" + strconv.Itoa(int(id)),
 	})
 	if err != nil {
 		fmt.Println(err)
@@ -71,10 +73,14 @@ func SendReportEmail(to string, balance float64, records []Record) {
 
 func SendEmail(to, htmlContent string) {
 
-	user := "7baf9402d99a97"           //config.EnvVars.EMAIL_USER
-	password := "2bf0a481a09bb7"       //config.EnvVars.EMAIL_PASSWORD
-	host := "sandbox.smtp.mailtrap.io" //config.EnvVars.EMAIL_HOST
-	port := 2525                       //config.EnvVars.EMAIL_PORT
+	user := config.EnvVars.EMAIL_USER
+	password := config.EnvVars.EMAIL_PASSWORD
+	host := config.EnvVars.EMAIL_HOST
+	port, err := strconv.Atoi(config.EnvVars.EMAIL_PORT)
+
+	if err != nil {
+		port = 587
+	}
 
 	from := "hello@tecolotedev.com"
 
