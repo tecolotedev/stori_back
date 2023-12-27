@@ -54,7 +54,7 @@ func Login(c *fiber.Ctx) error {
 		CreatedAt: user.CreatedAt.Time.String(),
 	}
 
-	token, err := utils.CreateToken(user.ID, time.Hour)
+	token, err := utils.CreateToken(user.ID, 24*time.Hour)
 	if err != nil {
 		return utils.SendError(c, "Error processing, please try it later", fiber.StatusInternalServerError)
 	}
@@ -64,7 +64,6 @@ func Login(c *fiber.Ctx) error {
 	cookie.Value = token
 	cookie.Expires = time.Now().Add(24 * time.Hour)
 	if !config.EnvVars.IS_LOCAL {
-		cookie.HTTPOnly = true
 		cookie.Secure = true
 		cookie.SameSite = "None"
 	}
