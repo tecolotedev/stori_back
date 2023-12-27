@@ -14,6 +14,7 @@ type AccCreditDebit struct {
 
 func MakeSummary(transfers []sqlc_code.Transfer) []email.TransferSummary {
 
+	//helper to group by month/year e.g: 11/2023
 	helper := make(map[string]AccCreditDebit)
 	var transferSummaries []email.TransferSummary
 
@@ -57,13 +58,13 @@ func MakeSummary(transfers []sqlc_code.Transfer) []email.TransferSummary {
 
 		t1 := email.TransferSummary{
 			Month:   key,
-			Type:    "credit",
+			Type:    "Credit",
 			Average: float64(sumCredit) / float64(len(value.credit)),
 		}
 
 		t2 := email.TransferSummary{
 			Month:   key,
-			Type:    "debit",
+			Type:    "Debit",
 			Average: float64(sumDebit) / float64(len(value.debit)),
 		}
 

@@ -12,8 +12,9 @@ import (
 	"github.com/tecolotedev/stori_back/config"
 )
 
+// Fill template for signup email
 func SendSignupEmail(name string, id int32, to string) {
-	f, err := os.ReadFile("email/signup.html") // just pass the file name
+	f, err := os.ReadFile("email/signup.html")
 	if err != nil {
 		fmt.Println("err loading template: ", err)
 	}
@@ -51,8 +52,9 @@ type TransferSummary struct {
 	Average float64
 }
 
+// Fill template for report email
 func SendReportEmail(to string, accountId int32, balance float64, records []Record, summaries []TransferSummary) {
-	f, err := os.ReadFile("email/report.html") // just pass the file name
+	f, err := os.ReadFile("email/report.html")
 	if err != nil {
 		fmt.Println("err loading template: ", err)
 	}
@@ -81,6 +83,7 @@ func SendReportEmail(to string, accountId int32, balance float64, records []Reco
 	SendEmail(to, bodyContentBuffer.String())
 }
 
+// Send email with mailtrap
 func SendEmail(to, htmlContent string) {
 
 	user := config.EnvVars.EMAIL_USER

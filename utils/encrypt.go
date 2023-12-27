@@ -2,13 +2,9 @@ package utils
 
 import (
 	"fmt"
-	"math/rand"
-	"strings"
 
 	"golang.org/x/crypto/bcrypt"
 )
-
-const alphabet = "abcdefghijklmnopqrstuvwxyz"
 
 // HashedPassword returns the bcrypt hash of the password+
 func HashPassword(password string) (string, error) {
@@ -23,16 +19,4 @@ func HashPassword(password string) (string, error) {
 // CheckPassword checks if the provided password is correct or not.
 func CheckPassword(password, hashedPassword string) error {
 	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
-}
-
-func RandomString(n int) string {
-	var sb strings.Builder
-	k := len(alphabet)
-
-	for i := 0; i < n; i++ {
-		c := alphabet[rand.Intn(k)]
-		sb.WriteByte(c)
-	}
-
-	return sb.String()
 }

@@ -18,7 +18,7 @@ const symmetricKey = "abcd1234"
 // Payload contains the payload data of the token
 type Payload struct {
 	ID        uuid.UUID `json:"id"`
-	USERID    int32     `joson:"user_id"`
+	USERID    int32     `json:"user_id"`
 	IssuedAt  time.Time `json:"issued_at"`
 	ExpiredAt time.Time `json:"expired_at"`
 }
@@ -40,7 +40,7 @@ func CreateToken(userId int32, duration time.Duration) (string, error) {
 	return token.SignedString([]byte(symmetricKey))
 }
 
-// Valid checks if the token payload is valid or not
+// // JWT needs this method
 func (payload *Payload) Valid() error {
 
 	if time.Now().After(payload.ExpiredAt) {
@@ -50,7 +50,6 @@ func (payload *Payload) Valid() error {
 	return nil
 }
 
-// VerifyToken checks if the token is valid or not
 func VerifyToken(token string) (*Payload, error) {
 	keyFunc := func(token *jwt.Token) (interface{}, error) {
 		_, ok := token.Method.(*jwt.SigningMethodHMAC)

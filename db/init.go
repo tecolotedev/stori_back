@@ -39,6 +39,7 @@ func InitDb() {
 	Conn = conn
 }
 
+// Postgres transactions to make safetly money's movements
 func MakeTx(ctx context.Context, transactions func() error) error {
 
 	tx, err := Conn.BeginTx(ctx, pgx.TxOptions{})

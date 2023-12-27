@@ -181,7 +181,9 @@ func UpdateBalanceAccount(c *fiber.Ctx) error {
 				records = append(records, record)
 				return nil
 			})
-			fmt.Println("err MakeTx: ", err)
+			if err != nil {
+				fmt.Println("err MakeTx: ", err)
+			}
 
 		}
 	}
