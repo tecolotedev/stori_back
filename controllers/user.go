@@ -64,7 +64,7 @@ func Login(c *fiber.Ctx) error {
 
 	c.Cookie(cookie)
 
-	return c.JSON(userResponse)
+	return utils.SendResponse(c, userResponse)
 
 }
 
@@ -74,7 +74,7 @@ func VerifyToken(c *fiber.Ctx) error {
 	if err != nil {
 		return err
 	}
-	return c.JSON(payload)
+	return utils.SendResponse(c, payload)
 }
 
 type signupRequest struct {
@@ -108,7 +108,7 @@ func Signup(c *fiber.Ctx) error {
 
 	email.SendSignupEmail(userCreated.Username, userCreated.ID, userCreated.Email)
 
-	return c.JSON(userCreated)
+	return utils.SendResponse(c, userCreated)
 }
 
 func VerifyAccount(c *fiber.Ctx) error {
@@ -123,5 +123,5 @@ func VerifyAccount(c *fiber.Ctx) error {
 		return err
 	}
 
-	return c.JSON(fiber.Map{"ok": true})
+	return utils.SendResponse(c, struct{}{})
 }

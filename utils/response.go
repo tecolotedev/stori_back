@@ -10,10 +10,17 @@ type ErrorResponse struct {
 }
 
 func SendError(c *fiber.Ctx, message string, status int) error {
-
 	c.Status(status)
-
 	res := ErrorResponse{Ok: false, Message: message}
+	return c.JSON(res)
+}
 
+type Response struct {
+	Ok   bool `json:"ok"`
+	Data any  `json:"data"`
+}
+
+func SendResponse(c *fiber.Ctx, data any) error {
+	res := Response{Ok: true, Data: data}
 	return c.JSON(res)
 }

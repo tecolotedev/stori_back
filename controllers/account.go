@@ -40,7 +40,7 @@ func ListAccounts(c *fiber.Ctx) error {
 		return utils.SendError(c, "Error processing, please try it later", fiber.StatusInternalServerError)
 	}
 
-	return c.JSON(accounts)
+	return utils.SendResponse(c, accounts)
 
 }
 
@@ -61,7 +61,7 @@ func GetAccount(c *fiber.Ctx) error {
 		return utils.SendError(c, "User not authorized to access this account", fiber.StatusBadRequest)
 	}
 
-	return c.JSON(account)
+	return utils.SendResponse(c, account)
 
 }
 
@@ -90,7 +90,7 @@ func CreateAccount(c *fiber.Ctx) error {
 		return utils.SendError(c, "Error processing, please try it later", fiber.StatusInternalServerError)
 	}
 
-	return c.JSON(accountCreated)
+	return utils.SendResponse(c, accountCreated)
 
 }
 
@@ -187,6 +187,6 @@ func UpdateBalanceAccount(c *fiber.Ctx) error {
 
 	email.SendReportEmail(user.Email, account.Balance.Float64, records)
 
-	return c.JSON(fiber.Map{"ok": "transfered"})
+	return utils.SendResponse(c, struct{}{})
 
 }
