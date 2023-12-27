@@ -61,7 +61,12 @@ func GetAccount(c *fiber.Ctx) error {
 		return utils.SendError(c, "User not authorized to access this account", fiber.StatusBadRequest)
 	}
 
-	return utils.SendResponse(c, account)
+	transfers, err := db.Queries.ListTransfers(context.Background(), pgtype.Int4{Int32: int32(accountId), Valid: true})
+	if err != nil {
+		return utils.SendError(c, "Error in request", fiber.StatusBadRequest)
+	}
+
+	return utils.SendResponse(c, fiber.Map{"account": account, "transfers": transfers})
 
 }
 
@@ -100,11 +105,14 @@ func UpdateBalanceAccount(c *fiber.Ctx) error {
 
 	accountId, err := strconv.Atoi(c.Params("account_id"))
 	if err != nil {
+		fmt.Println("err1: ", err)
 		return utils.SendError(c, "Error in request", fiber.StatusBadRequest)
 	}
 
 	file, err := c.FormFile("file")
 	if err != nil {
+		fmt.Println("err2: ", err)
+
 		return utils.SendError(c, "Error with the file", fiber.StatusBadRequest)
 
 	}
@@ -180,13 +188,18 @@ func UpdateBalanceAccount(c *fiber.Ctx) error {
 
 	account, err := db.Queries.GetAccountForUpdate(context.Background(), int32(accountId))
 	if err != nil {
-		return err
+		return utils.SendError(c, "Error in request", fiber.StatusBadRequest)
+	}
+
+	transfers, err := db.Queries.ListTransfers(context.Background(), pgtype.Int4{Int32: int32(accountId), Valid: true})
+	if err != nil {
+		return utils.SendError(c, "Error in request", fiber.StatusBadRequest)
 	}
 
 	user, _ := db.Queries.GetUserById(context.Background(), userId)
 
 	email.SendReportEmail(user.Email, account.Balance.Float64, records)
 
-	return utils.SendResponse(c, struct{}{})
+	return utils.SendResponse(c, fiber.Map{"account": account, "transfers": transfers})
 
 }

@@ -70,18 +70,10 @@ SELECT id, amount, reason, account_id, created_at FROM transfers
 WHERE 
     account_id = $1
 ORDER BY id
-LIMIT $2
-OFFSET $3
 `
 
-type ListTransfersParams struct {
-	AccountID pgtype.Int4
-	Limit     int32
-	Offset    int32
-}
-
-func (q *Queries) ListTransfers(ctx context.Context, arg ListTransfersParams) ([]Transfer, error) {
-	rows, err := q.db.Query(ctx, listTransfers, arg.AccountID, arg.Limit, arg.Offset)
+func (q *Queries) ListTransfers(ctx context.Context, accountID pgtype.Int4) ([]Transfer, error) {
+	rows, err := q.db.Query(ctx, listTransfers, accountID)
 	if err != nil {
 		return nil, err
 	}
