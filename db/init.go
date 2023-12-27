@@ -16,7 +16,7 @@ var Conn *pgx.Conn
 func InitDb() {
 	ctx := context.Background()
 
-	sslConn := "verify-full"
+	sslConn := "allow"
 
 	if config.EnvVars.IS_LOCAL {
 		sslConn = "disable"
