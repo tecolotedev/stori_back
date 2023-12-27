@@ -11,31 +11,6 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-const addAccountBalance = `-- name: AddAccountBalance :one
-UPDATE accounts
-SET balance = balance + $1
-WHERE id = $2
-RETURNING id, balance, currency, created_at, user_id
-`
-
-type AddAccountBalanceParams struct {
-	Amount pgtype.Float8
-	ID     int32
-}
-
-func (q *Queries) AddAccountBalance(ctx context.Context, arg AddAccountBalanceParams) (Account, error) {
-	row := q.db.QueryRow(ctx, addAccountBalance, arg.Amount, arg.ID)
-	var i Account
-	err := row.Scan(
-		&i.ID,
-		&i.Balance,
-		&i.Currency,
-		&i.CreatedAt,
-		&i.UserID,
-	)
-	return i, err
-}
-
 const createAccount = `-- name: CreateAccount :one
 INSERT INTO accounts (
     balance,
@@ -64,15 +39,6 @@ func (q *Queries) CreateAccount(ctx context.Context, arg CreateAccountParams) (A
 		&i.UserID,
 	)
 	return i, err
-}
-
-const deleteAccount = `-- name: DeleteAccount :exec
-DELETE FROM accounts WHERE id = $1
-`
-
-func (q *Queries) DeleteAccount(ctx context.Context, id int32) error {
-	_, err := q.db.Exec(ctx, deleteAccount, id)
-	return err
 }
 
 const getAccount = `-- name: GetAccount :one
@@ -150,31 +116,6 @@ func (q *Queries) ListAccounts(ctx context.Context, arg ListAccountsParams) ([]A
 		return nil, err
 	}
 	return items, nil
-}
-
-const reduceAccountBalance = `-- name: ReduceAccountBalance :one
-UPDATE accounts
-SET balance = balance - $1
-WHERE id = $2
-RETURNING id, balance, currency, created_at, user_id
-`
-
-type ReduceAccountBalanceParams struct {
-	Amount pgtype.Float8
-	ID     int32
-}
-
-func (q *Queries) ReduceAccountBalance(ctx context.Context, arg ReduceAccountBalanceParams) (Account, error) {
-	row := q.db.QueryRow(ctx, reduceAccountBalance, arg.Amount, arg.ID)
-	var i Account
-	err := row.Scan(
-		&i.ID,
-		&i.Balance,
-		&i.Currency,
-		&i.CreatedAt,
-		&i.UserID,
-	)
-	return i, err
 }
 
 const updateAccount = `-- name: UpdateAccount :one
