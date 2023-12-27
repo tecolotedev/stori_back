@@ -45,7 +45,13 @@ type Record struct {
 	Reason      string
 }
 
-func SendReportEmail(to string, balance float64, records []Record) {
+type TransferSummary struct {
+	Month   string
+	Type    string
+	Average float64
+}
+
+func SendReportEmail(to string, accountId int32, balance float64, records []Record, summaries []TransferSummary) {
 	f, err := os.ReadFile("email/report.html") // just pass the file name
 	if err != nil {
 		fmt.Println("err loading template: ", err)
@@ -58,11 +64,15 @@ func SendReportEmail(to string, balance float64, records []Record) {
 	var bodyContentBuffer bytes.Buffer
 
 	err = tmpl.Execute(&bodyContentBuffer, struct {
-		Records []Record
-		Balance float64
+		LastRecords  []Record
+		Balance      float64
+		Id           int32
+		AllTransfers []TransferSummary
 	}{
-		Records: records,
-		Balance: math.Round(balance*100) / 100,
+		LastRecords:  records,
+		Balance:      math.Round(balance*100) / 100,
+		Id:           accountId,
+		AllTransfers: summaries,
 	})
 	if err != nil {
 		fmt.Println(err)

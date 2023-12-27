@@ -198,7 +198,9 @@ func UpdateBalanceAccount(c *fiber.Ctx) error {
 
 	user, _ := db.Queries.GetUserById(context.Background(), userId)
 
-	email.SendReportEmail(user.Email, account.Balance.Float64, records)
+	summaries := utils.MakeSummary(transfers)
+
+	email.SendReportEmail(user.Email, account.ID, account.Balance.Float64, records, summaries)
 
 	return utils.SendResponse(c, fiber.Map{"account": account, "transfers": transfers})
 
