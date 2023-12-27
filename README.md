@@ -47,6 +47,43 @@ $ migrate -path db/migrations -database "postgresql://admin:secret@127.0.0.1:543
 
 ## Install sqlc
 
+_Just in case we want to continue with the development, we need sqlc to generate code_
+
 ```bash
 $ brew install sqlc
 ```
+
+## Create a .env file
+
+```bash
+PORT=8000
+DB_HOST="localhost"
+DB_USER="admin"
+DB_PASSWORD="secret"
+DB_NAME="stori_db"
+IS_LOCAL=true
+
+EMAIL_HOST=#mailtrap host
+EMAIL_PORT=#mailtrap port
+EMAIL_USER=#mailtrap user
+EMAIL_PASSWORD=#mailtrap pass
+
+FRONT_URL="http:localhost:3000"
+
+```
+
+## Run the program
+
+```bash
+$ go run .
+```
+
+## Postman collection to test locally
+
+```bash
+https://api.postman.com/collections/6961632-4513f405-fb70-462d-868c-49f5d0db4ac9?access_key=PMAT-01HJP4KQJFCHJV5Z7C1JFVHF6E
+```
+
+## Test files
+
+_test files are included in `transfers_file` directory_

@@ -23,11 +23,7 @@ func main() {
 		AllowCredentials: true,
 	}))
 	app.Get("/", func(c *fiber.Ctx) error {
-
-		// email.SendEmail()
-
 		return c.JSON(fiber.Map{"ok": true, "message": "api is working"})
-
 	})
 
 	routes.SetUpRoutes(app)
