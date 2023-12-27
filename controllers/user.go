@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/tecolotedev/stori_back/config"
 	"github.com/tecolotedev/stori_back/db"
 	"github.com/tecolotedev/stori_back/db/sqlc_code"
 	"github.com/tecolotedev/stori_back/email"
@@ -62,6 +63,11 @@ func Login(c *fiber.Ctx) error {
 	cookie.Name = "access_token"
 	cookie.Value = token
 	cookie.Expires = time.Now().Add(24 * time.Hour)
+	if !config.EnvVars.IS_LOCAL {
+		cookie.HTTPOnly = true
+		cookie.Secure = true
+		cookie.SameSite = "None"
+	}
 
 	c.Cookie(cookie)
 

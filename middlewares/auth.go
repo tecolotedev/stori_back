@@ -1,6 +1,8 @@
 package middlewares
 
 import (
+	"fmt"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/tecolotedev/stori_back/utils"
 )
@@ -10,6 +12,7 @@ func Auth(c *fiber.Ctx) error {
 	payload, err := utils.VerifyToken(accessToken)
 	if err != nil {
 		c.ClearCookie("access_token")
+		fmt.Println("err mid Auth: ", err)
 		return err
 	}
 	c.Locals("userId", payload.USERID)
