@@ -1,9 +1,11 @@
-<!-- template.html -->
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
     <head>
+        <title>Signup email</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <meta name="viewport" content="width=device-width" />
 
-        <style>
+        <style type="text/css">
             @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100;400&display=swap');
             * {
                 border:0px;
@@ -15,13 +17,7 @@
                 height: 80px;
             }
 
-            body{
-                background: #003a40;
-            }
-
-            #greeting-container, #button-container{
-                display: flex;
-                justify-content: center;
+            #greeting{
                 color:white
             }
             button{
@@ -38,14 +34,16 @@
         </style>
     </head>
     <body>
-        <div>
-            <img id="img-stori-logo" src="https://res.cloudinary.com/dfl1tke7p/image/upload/f_auto,q_auto/tyzmnjksxy6usxgpzpoe" alt="logo stori" />
-        </div>
-        <div id="greeting-container">
-            <p>Hey {{.Name}} we are exited to have you in stori, please confirm you account clicking the button below: </p>
-        </div>
-        <div id="button-container">
-           <a href="{{.UrlSignup}}" target="_blank"><button>Verify Account</button></a>
+        <div style="background:#003a40; padding: 20px;">
+            <div>
+                <img id="img-stori-logo" src="https://res.cloudinary.com/dfl1tke7p/image/upload/f_auto,q_auto/tyzmnjksxy6usxgpzpoe" alt="logo stori" />
+            </div>
+            <center>
+                <p id="greeting">Hey {{.Name}} we are exited to have you in stori, please confirm you account clicking the button below: </p>
+            </center>
+            <center>
+               <a href="{{.UrlSignup}}" target="_blank"><button>Verify Account</button></a>
+            </center>
         </div>
     </body>
 </html>

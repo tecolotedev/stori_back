@@ -1,9 +1,10 @@
-<!-- template.html -->
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
     <head>
-
-        <style>
+        <title>Report email</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <meta name="viewport" content="width=device-width" />
+        <style type="text/css">
             @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100;400&display=swap');
             * {
                 border:0px;
@@ -16,23 +17,8 @@
             }
             #wrapper{
                 padding: 20px
-            }
-
-            body{
-                background: #003a40;
-            }
+            }            
             
-
-            #greeting-container, #button-container{
-                display: flex;
-                justify-content: center;
-                color:white
-            }
-            #table-container{
-                display: flex;
-                justify-content: center;
-            }
-
             #report {
                 font-family: Arial, Helvetica, sans-serif;
                 border-collapse: collapse;
@@ -50,6 +36,10 @@
 
             #report tr:nth-child(even){background-color: #f2f2f2;}
             #report tr:nth-child(odd){background-color: white;}
+
+            th,td{
+                color: white;
+            }
 
             #report th {
                 padding-top: 12px;
@@ -69,47 +59,49 @@
         </style>
     </head>
     <body>
-        <div>
-            <img id="img-stori-logo" src="https://res.cloudinary.com/dfl1tke7p/image/upload/f_auto,q_auto/tyzmnjksxy6usxgpzpoe" alt="logo stori" />
-        </div>
-        <div id="wrapper">
-                
-            <h2>Last report for your account with id: "{{.Id}}"</h2>
-            
-            <div id="table-container">
-                <table id="report">
-                    <tr>
-                        <th>Date</th>
-                        <th>Transaction</th>
-                        <th>Reason</th>
-                    </tr>
-                    {{range .LastRecords}}
-                        <tr>
-                            <td>{{.Date}}</td>
-                            <td>{{.Transaction}}</td>
-                            <td>{{.Reason}}</td>
-                        </tr>
-                    {{end}}
-                </table>
+        <div style="background:#003a40; padding: 20px;">
+            <div>
+                <img id="img-stori-logo" src="https://res.cloudinary.com/dfl1tke7p/image/upload/f_auto,q_auto/tyzmnjksxy6usxgpzpoe" alt="logo stori" />
             </div>
-            <h3>Last Balance: ${{.Balance}}</h3>
-
-            <h2>Full summary per month</h2>
-            <div id="table-container">
-                <table id="report">
-                    <tr>
-                        <th>Month</th>
-                        <th>Type</th>
-                        <th>Average</th>
-                    </tr>
-                    {{range .AllTransfers}}
+            <div id="wrapper">
+                    
+                <h2>Last report for your account with id: "{{.Id}}"</h2>
+                
+                <center>
+                    <table id="report">
                         <tr>
-                            <td>{{.Month}}</td>
-                            <td>{{.Type}}</td>
-                            <td>{{.Average}}</td>
+                            <th>Date</th>
+                            <th>Transaction</th>
+                            <th>Reason</th>
                         </tr>
-                    {{end}}
-                </table>
+                        {{range .LastRecords}}
+                            <tr>
+                                <td>{{.Date}}</td>
+                                <td>{{.Transaction}}</td>
+                                <td>{{.Reason}}</td>
+                            </tr>
+                        {{end}}
+                    </table>
+                </center>
+                <h3>Last Balance: ${{.Balance}}</h3>
+
+                <h2>Full summary per month</h2>
+                <center>
+                    <table id="report">
+                        <tr>
+                            <th>Month</th>
+                            <th>Type</th>
+                            <th>Average</th>
+                        </tr>
+                        {{range .AllTransfers}}
+                            <tr>
+                                <td>{{.Month}}</td>
+                                <td>{{.Type}}</td>
+                                <td>{{.Average}}</td>
+                            </tr>
+                        {{end}}
+                    </table>
+                </center>
             </div>
         </div>
     </body>
