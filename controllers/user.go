@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"context"
+	"fmt"
 	"strconv"
 	"time"
 
@@ -92,6 +93,7 @@ func Signup(c *fiber.Ctx) error {
 
 	hashedPassword, err := utils.HashPassword(signupBody.Password)
 	if err != nil {
+		fmt.Println(err)
 		return utils.SendError(c, "Error processing, please try it later", fiber.StatusInternalServerError)
 	}
 
@@ -103,7 +105,8 @@ func Signup(c *fiber.Ctx) error {
 
 	userCreated, err := db.Queries.CreateUser(context.Background(), params)
 	if err != nil {
-		return utils.SendError(c, "Error processing, please try it later", fiber.StatusInternalServerError)
+		fmt.Println(err)
+		return utils.SendError(c, "Email already exists", fiber.StatusBadRequest)
 	}
 
 	email.SendSignupEmail(userCreated.Username, userCreated.ID, userCreated.Email)
