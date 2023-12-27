@@ -100,7 +100,6 @@ func SendEmail(to, htmlContent string) {
 	m.SetHeader("To", to)
 	m.SetHeader("Subject", "Hello!")
 	m.SetBody("text/html", htmlContent)
-	m.Attach("lolcat.jpg")
 
 	d := mail.NewDialer(host, port, user, password)
 
