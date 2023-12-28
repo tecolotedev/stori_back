@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/tecolotedev/stori_back/config"
 	"github.com/tecolotedev/stori_back/db"
 	"github.com/tecolotedev/stori_back/db/sqlc_code"
 	"github.com/tecolotedev/stori_back/email"
@@ -17,13 +16,6 @@ import (
 type loginRequest struct {
 	Email    string `json:"email" form:"email"`
 	Password string `json:"password"  form:"password"`
-}
-
-type loginResponse struct {
-	ID        int    `json:"id" form:"id"`
-	Email     string `json:"email" form:"email"`
-	Username  string `json:"username"  form:"username"`
-	CreatedAt string `json:"created_at"  form:"created_at"`
 }
 
 func Login(c *fiber.Ctx) error {
@@ -47,30 +39,12 @@ func Login(c *fiber.Ctx) error {
 		return utils.SendError(c, "Wrong email or password", fiber.StatusBadRequest)
 	}
 
-	userResponse := loginResponse{
-		ID:        int(user.ID),
-		Email:     user.Email,
-		Username:  user.Username,
-		CreatedAt: user.CreatedAt.Time.String(),
-	}
-
 	token, err := utils.CreateToken(user.ID, 24*time.Hour)
 	if err != nil {
 		return utils.SendError(c, "Error processing, please try it later", fiber.StatusInternalServerError)
 	}
 
-	cookie := new(fiber.Cookie)
-	cookie.Name = "access_token"
-	cookie.Value = token
-	cookie.Expires = time.Now().Add(24 * time.Hour)
-	if !config.EnvVars.IS_LOCAL {
-		cookie.Secure = true
-		cookie.SameSite = "None"
-	}
-
-	c.Cookie(cookie)
-
-	return utils.SendResponse(c, userResponse)
+	return utils.SendResponse(c, token)
 
 }
 
