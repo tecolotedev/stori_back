@@ -81,7 +81,7 @@ $ go run .
 ## Postman collection to test locally
 
 ```bash
-https://api.postman.com/collections/6961632-4513f405-fb70-462d-868c-49f5d0db4ac9?access_key=PMAT-01HJP4KQJFCHJV5Z7C1JFVHF6E
+https://api.postman.com/collections/6961632-baa5b9fa-4e5e-4242-88a7-c209ae4f65d3?access_key=PMAT-01HJQ4N7B40ZM5PAPSRFYJYZ2Z
 ```
 
 ## Test files
