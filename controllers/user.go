@@ -17,6 +17,12 @@ type loginRequest struct {
 	Email    string `json:"email" form:"email"`
 	Password string `json:"password"  form:"password"`
 }
+type loginResponse struct {
+	ID        int    `json:"id" form:"id"`
+	Email     string `json:"email" form:"email"`
+	Username  string `json:"username"  form:"username"`
+	CreatedAt string `json:"created_at"  form:"created_at"`
+}
 
 func Login(c *fiber.Ctx) error {
 	loginBody := new(loginRequest)
@@ -44,7 +50,22 @@ func Login(c *fiber.Ctx) error {
 		return utils.SendError(c, "Error processing, please try it later", fiber.StatusInternalServerError)
 	}
 
-	return utils.SendResponse(c, token)
+	userResponse := loginResponse{
+		ID:        int(user.ID),
+		Email:     user.Email,
+		Username:  user.Username,
+		CreatedAt: user.CreatedAt.Time.String(),
+	}
+
+	cookie := new(fiber.Cookie)
+	cookie.Name = "access_token"
+	cookie.Value = token
+	cookie.Expires = time.Now().Add(24 * time.Hour)
+	cookie.SameSite = "None"
+
+	c.Cookie(cookie)
+
+	return utils.SendResponse(c, userResponse)
 
 }
 
