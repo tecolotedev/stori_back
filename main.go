@@ -26,10 +26,21 @@ func main() {
 		return c.JSON(fiber.Map{"ok": true, "message": "api is working"})
 	})
 
-	app.Post("/test-token", func(c *fiber.Ctx) error {
+	app.Get("/get-token", func(c *fiber.Ctx) error {
 		cookie := fiber.Cookie{
 			Name:    "access_token",
-			Value:   "token value 3",
+			Value:   "token_value_get",
+			Expires: time.Now().Add(24 * time.Hour),
+		}
+
+		c.Cookie(&cookie)
+		return c.JSON(fiber.Map{"ok": true, "message": "sending token"})
+	})
+
+	app.Post("/post-token", func(c *fiber.Ctx) error {
+		cookie := fiber.Cookie{
+			Name:    "access_token",
+			Value:   "token_value_post",
 			Expires: time.Now().Add(24 * time.Hour),
 		}
 
