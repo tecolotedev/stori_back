@@ -28,9 +28,11 @@ func main() {
 
 	app.Get("/get-token", func(c *fiber.Ctx) error {
 		cookie := fiber.Cookie{
-			Name:    "access_token",
-			Value:   "token_value_get",
-			Expires: time.Now().Add(24 * time.Hour),
+			Name:     "access_token",
+			Value:    "token_value_get",
+			SameSite: "None",
+			HTTPOnly: true,
+			Expires:  time.Now().Add(24 * time.Hour),
 		}
 
 		c.Cookie(&cookie)
@@ -39,9 +41,11 @@ func main() {
 
 	app.Post("/post-token", func(c *fiber.Ctx) error {
 		cookie := fiber.Cookie{
-			Name:    "access_token",
-			Value:   "token_value_post",
-			Expires: time.Now().Add(24 * time.Hour),
+			Name:     "access_token",
+			Value:    "token_value_post",
+			SameSite: "None",
+			HTTPOnly: true,
+			Expires:  time.Now().Add(24 * time.Hour),
 		}
 
 		c.Cookie(&cookie)
