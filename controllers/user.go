@@ -60,10 +60,10 @@ func Login(c *fiber.Ctx) error {
 	cookie := new(fiber.Cookie)
 	cookie.Name = "access_token"
 	cookie.Value = token
-	cookie.Expires = time.Now().Add(24 * time.Hour)
 	cookie.SameSite = "None"
 	cookie.Secure = false
 	cookie.Domain = ".tecolotedev.com"
+	cookie.Expires = time.Now().Add(24 * time.Hour)
 
 	c.Cookie(cookie)
 

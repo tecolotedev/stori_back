@@ -5,7 +5,6 @@ import (
 
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/tecolotedev/stori_back/config"
-	"github.com/tecolotedev/stori_back/db"
 	"github.com/tecolotedev/stori_back/routes"
 
 	"github.com/gofiber/fiber/v2"
@@ -13,7 +12,7 @@ import (
 
 func main() {
 	config.SetUpConfig()
-	db.InitDb()
+	// db.InitDb()
 
 	app := fiber.New()
 
