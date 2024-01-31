@@ -26,7 +26,7 @@ func main() {
 		return c.JSON(fiber.Map{"ok": true, "message": "api is working"})
 	})
 
-	app.Get("/token", func(c *fiber.Ctx) error {
+	app.Post("/test-token", func(c *fiber.Ctx) error {
 		cookie := fiber.Cookie{
 			Name:    "access_token",
 			Value:   "token value 3",
