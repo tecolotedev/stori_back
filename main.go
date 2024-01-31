@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"time"
 
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/tecolotedev/stori_back/config"
@@ -23,6 +24,17 @@ func main() {
 	}))
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.JSON(fiber.Map{"ok": true, "message": "api is working"})
+	})
+
+	app.Get("/token", func(c *fiber.Ctx) error {
+		cookie := fiber.Cookie{
+			Name:    "access_token",
+			Value:   "token value 3",
+			Expires: time.Now().Add(24 * time.Hour),
+		}
+
+		c.Cookie(&cookie)
+		return c.JSON(fiber.Map{"ok": true, "message": "sending token"})
 	})
 
 	routes.SetUpRoutes(app)
