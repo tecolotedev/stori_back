@@ -7,4 +7,5 @@ import (
 
 func SetNewsletterRoutes(app *fiber.App) {
 	app.Get("/newsletter", controllers.GetNewsletter)
+	app.Post("/newsletter", controllers.CreateNewsletter)
 }
