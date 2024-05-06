@@ -10,23 +10,28 @@ import (
 	"github.com/tecolotedev/stori_back/models"
 )
 
-// func GetAllNewsletterVersions(c *fiber.Ctx) error {
-// 	// var newsletters []models.Newsletter
+func GetAllNewslettersVersions(c *fiber.Ctx) error {
+	newsletterID, err := c.ParamsInt("newsletter_id")
 
-// 	// result := models.DB.Find(&newsletters)
+	if err != nil {
+		fmt.Println(err)
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"ok": false, "message": err.Error()})
+	}
+	var newsletterVersions []models.NewsletterVersion
 
-// 	// if result.Error != nil {
-// 	// 	fmt.Println(result.Error)
-// 	// 	c.Status(500).JSON(fiber.Map{"ok": false, "message": "something went wrong, please try it later"})
-// 	// }
+	result := models.DB.Where("newsletter_id = ? ", newsletterID).Find(&newsletterVersions)
 
-// 	// return c.JSON(newsletters)
-// }
+	if result.Error != nil {
+		fmt.Println(result.Error)
+		c.Status(500).JSON(fiber.Map{"ok": false, "message": "something went wrong, please try it later"})
+	}
+
+	return c.JSON(newsletterVersions)
+}
 
 type NewsletterVersionRequest struct {
 	Title   string `json:"title" form:"title"`
 	Content string `json:"content" form:"content"`
-	// File
 }
 
 func CreateNewsletterVersion(c *fiber.Ctx) error {

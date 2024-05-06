@@ -6,6 +6,6 @@ import (
 )
 
 func SetNewsletterVersionRoutes(app *fiber.App) {
-	// app.Get("/newsletter-version", controllers.GetAllNewsletters)
+	app.Get("/newsletter-version/:newsletter_id", controllers.GetAllNewslettersVersions)
 	app.Post("/newsletter-version/:newsletter_id", controllers.CreateNewsletterVersion)
 }
