@@ -33,6 +33,7 @@ func InitDB() {
 	// migrate models
 	db.AutoMigrate(&Newsletter{})
 	db.AutoMigrate(&NewsletterVersion{})
+	db.AutoMigrate(&Recipient{})
 
 	DB = db
 }

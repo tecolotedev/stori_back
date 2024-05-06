@@ -10,4 +10,6 @@ type Newsletter struct {
 	NewsletterVersions []NewsletterVersion `json:"newsletter_versions" gorm:"constraint:OnDelete:CASCADE"`
 	CreatedAt          time.Time           `json:"created_at"`
 	UpdatedAt          time.Time           `json:"updated_at"`
+
+	Recipients []Recipient `gorm:"many2many:recipient_newsletter;"`
 }

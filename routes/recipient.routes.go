@@ -7,4 +7,5 @@ import (
 
 func SetRecipientRoutes(app *fiber.App) {
 	app.Get("/recipient", controllers.GetRecipients)
+	app.Post("/recipient", controllers.CreateRecipients)
 }
