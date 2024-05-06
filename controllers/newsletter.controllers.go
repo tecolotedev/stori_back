@@ -1,6 +1,9 @@
 package controllers
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"github.com/gofiber/fiber/v2"
+	"github.com/tecolotedev/stori_back/models"
+)
 
 func GetNewsletter(c *fiber.Ctx) error {
 	return c.SendString("Hello, from newsletter controller")
@@ -17,5 +20,12 @@ func CreateNewsletter(c *fiber.Ctx) error {
 		return err
 	}
 
-	return c.JSON(nl)
+	newsletter := models.Newsletter{
+		Name:               nl.Name,
+		NewsletterVersions: []models.NewsletterVersion{},
+	}
+
+	models.DB.Create(&newsletter)
+
+	return c.JSON(newsletter)
 }
