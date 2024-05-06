@@ -1,27 +1,38 @@
 package controllers
 
 import (
+	"fmt"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/tecolotedev/stori_back/models"
 )
 
-func GetNewsletter(c *fiber.Ctx) error {
-	return c.SendString("Hello, from newsletter controller")
+func GetAllNewsletters(c *fiber.Ctx) error {
+	var newsletters []models.Newsletter
+
+	result := models.DB.Find(&newsletters)
+
+	if result.Error != nil {
+		fmt.Println(result.Error)
+		c.Status(500).JSON(fiber.Map{"ok": false, "message": "something went wrong, please try it later"})
+	}
+
+	return c.JSON(newsletters)
 }
 
-type CreateNewsLetter struct {
+type NewsletterRequest struct {
 	Name string `json:"name" form:"name"`
 }
 
 func CreateNewsletter(c *fiber.Ctx) error {
-	nl := new(CreateNewsLetter)
+	nlr := new(NewsletterRequest)
 
-	if err := c.BodyParser(nl); err != nil {
+	if err := c.BodyParser(nlr); err != nil {
 		return err
 	}
 
 	newsletter := models.Newsletter{
-		Name:               nl.Name,
+		Name:               nlr.Name,
 		NewsletterVersions: []models.NewsletterVersion{},
 	}
 

@@ -32,6 +32,7 @@ func InitDB() {
 
 	// migrate models
 	db.AutoMigrate(&Newsletter{})
+	db.AutoMigrate(&NewsletterVersion{})
 
 	DB = db
 }

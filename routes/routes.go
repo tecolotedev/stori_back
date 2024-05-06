@@ -6,5 +6,6 @@ import (
 
 func SetRoutes(app *fiber.App) {
 	SetNewsletterRoutes(app)
+	SetNewsletterVersionRoutes(app)
 	SetRecipientRoutes(app)
 }
