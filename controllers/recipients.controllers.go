@@ -8,7 +8,18 @@ import (
 )
 
 func GetRecipients(c *fiber.Ctx) error {
-	return c.SendString("Hello, from recipient controller")
+	newsletterID, err := c.ParamsInt("newsletter_id")
+
+	if err != nil {
+		fmt.Println(err)
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"ok": false, "message": err.Error()})
+	}
+
+	var newsletter models.Newsletter
+
+	models.DB.Model(&models.Newsletter{}).Preload("Recipients").Find(&newsletter, "id = ?", newsletterID)
+
+	return c.JSON(newsletter)
 }
 
 type RecipientRequest struct {
@@ -47,5 +58,30 @@ func CreateRecipients(c *fiber.Ctx) error {
 		models.DB.Create(&r)
 	}
 
-	return c.JSON(fiber.Map{"ok": true})
+	return c.JSON(fiber.Map{"ok": true, "message": "created"})
+}
+
+func DeleteRecipient(c *fiber.Ctx) error {
+	newsletterID, err := c.ParamsInt("newsletter_id")
+
+	if err != nil {
+		fmt.Println(err)
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"ok": false, "message": err.Error()})
+	}
+
+	recipientID, err := c.ParamsInt("recipient_id")
+
+	if err != nil {
+		fmt.Println(err)
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"ok": false, "message": err.Error()})
+	}
+
+	var newsletter models.Newsletter
+	models.DB.First(&newsletter, newsletterID)
+
+	var recipient models.Recipient
+	models.DB.First(&recipient, recipientID)
+
+	models.DB.Model(&recipient).Association("Newsletters").Delete(newsletter)
+	return c.JSON(fiber.Map{"ok": true, "message": "deleted"})
 }

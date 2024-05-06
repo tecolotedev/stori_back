@@ -9,5 +9,5 @@ type Recipient struct {
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 
-	Newsletters []Newsletter `gorm:"many2many:recipient_newsletter;"`
+	Newsletters []Newsletter `json:"newsletters" gorm:"many2many:recipient_newsletter;"`
 }

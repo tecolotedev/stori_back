@@ -6,6 +6,7 @@ import (
 )
 
 func SetRecipientRoutes(app *fiber.App) {
-	app.Get("/recipient", controllers.GetRecipients)
 	app.Post("/recipient", controllers.CreateRecipients)
+	app.Get("/recipient/:newsletter_id", controllers.GetRecipients)
+	app.Delete("/recipient/:newsletter_id/:recipient_id", controllers.DeleteRecipient)
 }
