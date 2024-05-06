@@ -11,4 +11,6 @@ func SetNewsletterVersionRoutes(app *fiber.App) {
 	app.Put("/newsletter-version/:newsletter_version_id", controllers.UpdateNewsletterVersion)
 	app.Delete("/newsletter-version/:newsletter_version_id", controllers.DeleteNewsletterVersion)
 
+	app.Post("/send-newsletter/:newsletter_version_id", controllers.SendNewsletter)
+
 }

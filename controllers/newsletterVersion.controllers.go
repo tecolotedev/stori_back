@@ -119,3 +119,29 @@ func DeleteNewsletterVersion(c *fiber.Ctx) error {
 
 	return c.JSON(fiber.Map{"ok": true, "message": "deleted"})
 }
+
+func SendNewsletter(c *fiber.Ctx) error {
+	newsletterVersionID, err := c.ParamsInt("newsletter_version_id")
+	if err != nil {
+		fmt.Println(err)
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"ok": false, "message": err.Error()})
+	}
+
+	var newsletterVersion models.NewsletterVersion
+	models.DB.First(&newsletterVersion, newsletterVersionID)
+
+	fmt.Println("newsletterVersion: ", newsletterVersion)
+
+	var newsletter models.Newsletter
+	models.DB.Model(&models.Newsletter{}).Preload("Recipients").Find(&newsletter, "id = ?", newsletterVersion.NewsletterID)
+
+	fmt.Println("newsletter: ", newsletter)
+
+	// sent to email to channel
+
+	// update email sent
+	models.DB.Model(&models.NewsletterVersion{}).Where("id = ?", newsletterVersionID).Update("sent", true)
+
+	return c.JSON(fiber.Map{"ok": true, "message": "email sent"})
+
+}
