@@ -2,12 +2,10 @@ package controllers
 
 import (
 	"fmt"
-	"strconv"
-	"strings"
-	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/tecolotedev/stori_back/models"
+	"github.com/tecolotedev/stori_back/utils"
 )
 
 func GetAllNewslettersVersions(c *fiber.Ctx) error {
@@ -43,10 +41,12 @@ func CreateNewsletterVersion(c *fiber.Ctx) error {
 	}
 
 	file, err := c.FormFile("file")
-
+	var fileName string
 	if err != nil {
 		fmt.Println(err)
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"ok": false, "message": err.Error()})
+	} else {
+		fileName = utils.AddPrefixToFilename(file.Filename)
+		c.SaveFile(file, fmt.Sprintf("./files/%s", fileName))
 	}
 
 	nlvr := new(NewsletterVersionRequest)
@@ -54,13 +54,6 @@ func CreateNewsletterVersion(c *fiber.Ctx) error {
 	if err := c.BodyParser(nlvr); err != nil {
 		return err
 	}
-
-	splitFile := strings.Split(file.Filename, ".")
-	unix := time.Now().Unix()
-
-	fileName := splitFile[0] + "_" + strconv.Itoa(int(unix)) + "." + splitFile[1]
-
-	c.SaveFile(file, fmt.Sprintf("./files/%s", fileName))
 
 	newsletterVersion := models.NewsletterVersion{
 		Title:        nlvr.Title,
@@ -72,4 +65,57 @@ func CreateNewsletterVersion(c *fiber.Ctx) error {
 	models.DB.Create(&newsletterVersion)
 
 	return c.JSON(newsletterVersion)
+}
+
+type NewsletterVersionUpdateRequest struct {
+	Title   string `json:"title" form:"title"`
+	Content string `json:"content" form:"content"`
+}
+
+func UpdateNewsletterVersion(c *fiber.Ctx) error {
+
+	newsletterVersionID, err := c.ParamsInt("newsletter_version_id")
+
+	if err != nil {
+		fmt.Println(err)
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"ok": false, "message": err.Error()})
+	}
+
+	file, err := c.FormFile("file")
+	var fileName string
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		fileName = utils.AddPrefixToFilename(file.Filename)
+		c.SaveFile(file, fmt.Sprintf("./files/%s", fileName))
+	}
+
+	nlvr := new(NewsletterVersionUpdateRequest)
+
+	if err := c.BodyParser(nlvr); err != nil {
+		return err
+	}
+
+	newsletterVersion := models.NewsletterVersion{
+		Title:   nlvr.Title,
+		Content: nlvr.Content,
+		File:    fileName,
+	}
+
+	models.DB.Where("id = ?", newsletterVersionID).Updates(&newsletterVersion)
+
+	return c.JSON(newsletterVersion)
+}
+
+func DeleteNewsletterVersion(c *fiber.Ctx) error {
+	newsletterVersionID, err := c.ParamsInt("newsletter_version_id")
+
+	if err != nil {
+		fmt.Println(err)
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"ok": false, "message": err.Error()})
+	}
+
+	models.DB.Where("id = ?", newsletterVersionID).Delete(&models.NewsletterVersion{})
+
+	return c.JSON(fiber.Map{"ok": true, "message": "deleted"})
 }
