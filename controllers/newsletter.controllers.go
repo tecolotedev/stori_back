@@ -20,12 +20,12 @@ func GetAllNewsletters(c *fiber.Ctx) error {
 	return c.JSON(newsletters)
 }
 
-type NewsletterRequest struct {
+type NewsletterCreateRequest struct {
 	Name string `json:"name" form:"name"`
 }
 
 func CreateNewsletter(c *fiber.Ctx) error {
-	nlr := new(NewsletterRequest)
+	nlr := new(NewsletterCreateRequest)
 
 	if err := c.BodyParser(nlr); err != nil {
 		return err
@@ -39,4 +39,42 @@ func CreateNewsletter(c *fiber.Ctx) error {
 	models.DB.Create(&newsletter)
 
 	return c.JSON(newsletter)
+}
+
+type NewsletterUpdateRequest struct {
+	Name string `json:"name" form:"name"`
+}
+
+func UpdateNewsletter(c *fiber.Ctx) error {
+	newsletterID, err := c.ParamsInt("newsletter_id")
+
+	if err != nil {
+		fmt.Println(err)
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"ok": false, "message": err.Error()})
+	}
+
+	nlr := new(NewsletterUpdateRequest)
+
+	if err := c.BodyParser(nlr); err != nil {
+		return err
+	}
+
+	models.DB.Model(&models.Newsletter{}).Where("id = ?", newsletterID).Update("Name", nlr.Name)
+
+	return c.JSON(fiber.Map{"ok": true, "message": "updated"})
+}
+
+func DeleteNewsletter(c *fiber.Ctx) error {
+	newsletterID, err := c.ParamsInt("newsletter_id")
+
+	if err != nil {
+		fmt.Println(err)
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"ok": false, "message": err.Error()})
+	}
+
+	models.DB.Where("newsletter_id = ?", newsletterID).Delete(&models.NewsletterVersion{})
+
+	models.DB.Where("id = ?", newsletterID).Delete(&models.Newsletter{})
+
+	return c.JSON(fiber.Map{"ok": true, "message": "deleted"})
 }

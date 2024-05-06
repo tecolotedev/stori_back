@@ -7,7 +7,7 @@ import (
 type Newsletter struct {
 	ID                 uint                `gorm:"primarykey" json:"id"`
 	Name               string              `json:"name"`
-	NewsletterVersions []NewsletterVersion `json:"newsletter_versions"`
+	NewsletterVersions []NewsletterVersion `json:"newsletter_versions" gorm:"constraint:OnDelete:CASCADE"`
 	CreatedAt          time.Time           `json:"created_at"`
 	UpdatedAt          time.Time           `json:"updated_at"`
 }
