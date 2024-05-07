@@ -90,7 +90,7 @@ func UpdateNewsletterVersion(c *fiber.Ctx) error {
 	file, err := c.FormFile("file")
 	var fileName string
 	if err != nil {
-		fmt.Println(err)
+		utils.ErrorLog(err)
 	} else {
 		fileName = utils.AddPrefixToFilename(file.Filename)
 		c.SaveFile(file, fmt.Sprintf("./files/%s", fileName))

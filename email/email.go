@@ -6,6 +6,7 @@ import (
 
 	"github.com/go-mail/mail"
 	"github.com/tecolotedev/stori_back/config"
+	"github.com/tecolotedev/stori_back/utils"
 )
 
 var Dialer *mail.Dialer
@@ -62,6 +63,7 @@ func sendNewsletterEmail(email NewsletterEmail) {
 }
 
 func sendEmail(to, subject, file, htmlContent string) {
+
 	from := "hello@tecolotedev.com"
 
 	m := mail.NewMessage()
@@ -76,7 +78,7 @@ func sendEmail(to, subject, file, htmlContent string) {
 	}
 
 	if err := Dialer.DialAndSend(m); err != nil {
-		fmt.Println(err)
+		utils.ErrorLog(err)
 	}
 }
 

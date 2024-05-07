@@ -2,9 +2,10 @@ package email
 
 import (
 	"bytes"
-	"fmt"
 	"os"
 	"text/template"
+
+	"github.com/tecolotedev/stori_back/utils"
 )
 
 func GetNewsletterHTMLBody(name, content string) string {
@@ -12,13 +13,13 @@ func GetNewsletterHTMLBody(name, content string) string {
 	// read template as file
 	f, err := os.ReadFile("email/templates/newsletter.html")
 	if err != nil {
-		fmt.Println(err)
+		utils.ErrorLog(err)
 	}
 
 	// parse the file to template object
 	tmpl, err := template.New("template").Parse(string(f))
 	if err != nil {
-		fmt.Println(err)
+		utils.ErrorLog(err)
 	}
 
 	// create html content and insert data into the template
@@ -31,7 +32,7 @@ func GetNewsletterHTMLBody(name, content string) string {
 		Content: content,
 	})
 	if err != nil {
-		fmt.Println(err)
+		utils.ErrorLog(err)
 	}
 
 	return bodyContentBuffer.String()
