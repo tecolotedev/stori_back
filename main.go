@@ -5,6 +5,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/tecolotedev/stori_back/config"
+	"github.com/tecolotedev/stori_back/email"
 	"github.com/tecolotedev/stori_back/models"
 	"github.com/tecolotedev/stori_back/routes"
 )
@@ -23,6 +24,12 @@ func main() {
 	})
 
 	routes.SetRoutes(app)
+
+	// concurrency for emails
+	email.EmailHandler.NewsletterEmailChan = make(chan email.NewsletterEmail)
+	email.EmailHandler.DoneChan = make(chan bool)
+	email.EmailHandler.InitDialer()
+	go email.EmailHandler.ListenEmails()
 
 	log.Fatal(app.Listen(":8000"))
 }

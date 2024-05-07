@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/tecolotedev/stori_back/email"
 	"github.com/tecolotedev/stori_back/models"
 	"github.com/tecolotedev/stori_back/utils"
 )
@@ -130,14 +131,33 @@ func SendNewsletter(c *fiber.Ctx) error {
 	var newsletterVersion models.NewsletterVersion
 	models.DB.First(&newsletterVersion, newsletterVersionID)
 
-	fmt.Println("newsletterVersion: ", newsletterVersion)
-
 	var newsletter models.Newsletter
 	models.DB.Model(&models.Newsletter{}).Preload("Recipients").Find(&newsletter, "id = ?", newsletterVersion.NewsletterID)
 
-	fmt.Println("newsletter: ", newsletter)
+	for _, recipient := range newsletter.Recipients {
+		fmt.Println("recipient: ", recipient)
 
-	// sent to email to channel
+		to := recipient.Email
+		name := recipient.Name
+
+		subject := newsletterVersion.Title
+		content := newsletterVersion.Content
+		file := newsletterVersion.File
+
+		// sent to email to channel
+		newEmail := email.NewsletterEmail{
+			Email: email.Email{
+				To:      to,
+				Subject: subject,
+			},
+			File:    file,
+			Name:    name,
+			Content: content,
+		}
+
+		email.EmailHandler.NewsletterEmailChan <- newEmail
+
+	}
 
 	// update email sent
 	models.DB.Model(&models.NewsletterVersion{}).Where("id = ?", newsletterVersionID).Update("sent", true)

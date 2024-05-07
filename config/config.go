@@ -1,6 +1,11 @@
 package config
 
-import "os"
+import (
+	"fmt"
+	"os"
+
+	"github.com/joho/godotenv"
+)
 
 var EnvVars struct {
 	DB_HOST     string
@@ -9,9 +14,17 @@ var EnvVars struct {
 	DB_NAME     string
 	DB_PORT     string
 	DB_SSLMODE  string
+
+	EMAIL_HOST     string
+	EMAIL_PORT     string
+	EMAIL_USER     string
+	EMAIL_PASSWORD string
 }
 
 func InitConfig() {
+	if err := godotenv.Load(); err != nil {
+		fmt.Printf("Error loading .env file: %v", err)
+	}
 
 	// Database variables
 	db_host := os.Getenv("DB_HOST")
@@ -27,5 +40,16 @@ func InitConfig() {
 	EnvVars.DB_NAME = db_name
 	EnvVars.DB_PORT = db_port
 	EnvVars.DB_SSLMODE = db_sslmode
+
+	// Mail variables
+	email_host := os.Getenv("EMAIL_HOST")
+	email_port := os.Getenv("EMAIL_PORT")
+	email_user := os.Getenv("EMAIL_USER")
+	email_password := os.Getenv("EMAIL_PASSWORD")
+
+	EnvVars.EMAIL_HOST = email_host
+	EnvVars.EMAIL_PORT = email_port
+	EnvVars.EMAIL_USER = email_user
+	EnvVars.EMAIL_PASSWORD = email_password
 
 }
