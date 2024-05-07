@@ -32,7 +32,7 @@ services:
       - EMAIL_HOST=bulk.smtp.mailtrap.io 
       - EMAIL_PORT=587
       - EMAIL_USER=api
-      - EMAIL_PASSWORD=06a5dbcc0b6a31b96285e338dd500f2b#2bf0a481a09bb7 
+      - EMAIL_PASSWORD=06a5dbcc0b6a31b96285e338dd500f2b
 
     depends_on:
       postgres:
