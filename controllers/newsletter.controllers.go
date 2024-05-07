@@ -1,10 +1,9 @@
 package controllers
 
 import (
-	"fmt"
-
 	"github.com/gofiber/fiber/v2"
 	"github.com/tecolotedev/stori_back/models"
+	"github.com/tecolotedev/stori_back/utils"
 )
 
 func GetAllNewsletters(c *fiber.Ctx) error {
@@ -13,8 +12,8 @@ func GetAllNewsletters(c *fiber.Ctx) error {
 	result := models.DB.Find(&newsletters)
 
 	if result.Error != nil {
-		fmt.Println(result.Error)
-		c.Status(500).JSON(fiber.Map{"ok": false, "message": "something went wrong, please try it later"})
+		utils.ErrorLog(result.Error)
+		return c.Status(int(DatabaseError.code)).JSON(fiber.Map{"ok": false, "message": DatabaseError.message})
 	}
 
 	return c.JSON(newsletters)
@@ -28,7 +27,8 @@ func CreateNewsletter(c *fiber.Ctx) error {
 	nlr := new(NewsletterCreateRequest)
 
 	if err := c.BodyParser(nlr); err != nil {
-		return err
+		utils.ErrorLog(err)
+		return c.Status(int(BodyError.code)).JSON(fiber.Map{"ok": false, "message": BodyError.message})
 	}
 
 	newsletter := models.Newsletter{
@@ -49,17 +49,23 @@ func UpdateNewsletter(c *fiber.Ctx) error {
 	newsletterID, err := c.ParamsInt("newsletter_id")
 
 	if err != nil {
-		fmt.Println(err)
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"ok": false, "message": err.Error()})
+		utils.ErrorLog(err)
+		return c.Status(int(ParamsError.code)).JSON(fiber.Map{"ok": false, "message": ParamsError.message})
 	}
 
 	nlr := new(NewsletterUpdateRequest)
 
 	if err := c.BodyParser(nlr); err != nil {
-		return err
+		utils.ErrorLog(err)
+		return c.Status(int(BodyError.code)).JSON(fiber.Map{"ok": false, "message": BodyError.message})
 	}
 
-	models.DB.Model(&models.Newsletter{}).Where("id = ?", newsletterID).Update("Name", nlr.Name)
+	result := models.DB.Model(&models.Newsletter{}).Where("id = ?", newsletterID).Update("Name", nlr.Name)
+
+	if result.Error != nil {
+		utils.ErrorLog(result.Error)
+		return c.Status(int(DatabaseError.code)).JSON(fiber.Map{"ok": false, "message": DatabaseError.message})
+	}
 
 	return c.JSON(fiber.Map{"ok": true, "message": "updated"})
 }
@@ -68,13 +74,21 @@ func DeleteNewsletter(c *fiber.Ctx) error {
 	newsletterID, err := c.ParamsInt("newsletter_id")
 
 	if err != nil {
-		fmt.Println(err)
+		utils.ErrorLog(err)
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"ok": false, "message": err.Error()})
 	}
 
-	models.DB.Where("newsletter_id = ?", newsletterID).Delete(&models.NewsletterVersion{})
+	result := models.DB.Where("newsletter_id = ?", newsletterID).Delete(&models.NewsletterVersion{})
+	if result.Error != nil {
+		utils.ErrorLog(result.Error)
+		return c.Status(int(DatabaseError.code)).JSON(fiber.Map{"ok": false, "message": DatabaseError.message})
+	}
 
-	models.DB.Where("id = ?", newsletterID).Delete(&models.Newsletter{})
+	result = models.DB.Where("id = ?", newsletterID).Delete(&models.Newsletter{})
+	if result.Error != nil {
+		utils.ErrorLog(result.Error)
+		return c.Status(int(DatabaseError.code)).JSON(fiber.Map{"ok": false, "message": DatabaseError.message})
+	}
 
 	return c.JSON(fiber.Map{"ok": true, "message": "deleted"})
 }

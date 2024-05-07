@@ -21,6 +21,7 @@ func GetNewsletterHTMLBody(name, content string) string {
 		fmt.Println(err)
 	}
 
+	// create html content and insert data into the template
 	var bodyContentBuffer bytes.Buffer
 	err = tmpl.Execute(&bodyContentBuffer, struct {
 		Name    string

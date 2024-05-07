@@ -3,6 +3,7 @@ module github.com/tecolotedev/stori_back
 go 1.21.1
 
 require (
+	github.com/fatih/color v1.16.0
 	github.com/go-mail/mail v2.3.1+incompatible
 	github.com/gofiber/fiber/v2 v2.52.4
 	github.com/joho/godotenv v1.5.1

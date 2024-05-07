@@ -11,7 +11,7 @@ FROM alpine:3.13
 WORKDIR /app
 
 COPY --from=builder /app/main .
-# COPY ./email ./email
+COPY ./email ./email
 
 EXPOSE 8000
 CMD ["/app/main"]

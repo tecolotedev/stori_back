@@ -11,18 +11,18 @@ import (
 
 func GetAllNewslettersVersions(c *fiber.Ctx) error {
 	newsletterID, err := c.ParamsInt("newsletter_id")
-
 	if err != nil {
-		fmt.Println(err)
+		utils.ErrorLog(err)
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"ok": false, "message": err.Error()})
 	}
+
 	var newsletterVersions []models.NewsletterVersion
 
 	result := models.DB.Where("newsletter_id = ? ", newsletterID).Find(&newsletterVersions)
 
 	if result.Error != nil {
-		fmt.Println(result.Error)
-		c.Status(500).JSON(fiber.Map{"ok": false, "message": "something went wrong, please try it later"})
+		utils.ErrorLog(result.Error)
+		return c.Status(int(DatabaseError.code)).JSON(fiber.Map{"ok": false, "message": DatabaseError.message})
 	}
 
 	return c.JSON(newsletterVersions)
@@ -37,14 +37,14 @@ func CreateNewsletterVersion(c *fiber.Ctx) error {
 	newsletterID, err := c.ParamsInt("newsletter_id")
 
 	if err != nil {
-		fmt.Println(err)
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"ok": false, "message": err.Error()})
+		utils.ErrorLog(err)
+		return c.Status(int(ParamsError.code)).JSON(fiber.Map{"ok": false, "message": ParamsError.message})
 	}
 
 	file, err := c.FormFile("file")
 	var fileName string
 	if err != nil {
-		fmt.Println(err)
+		utils.ErrorLog(err)
 	} else {
 		fileName = utils.AddPrefixToFilename(file.Filename)
 		c.SaveFile(file, fmt.Sprintf("./files/%s", fileName))
@@ -53,7 +53,8 @@ func CreateNewsletterVersion(c *fiber.Ctx) error {
 	nlvr := new(NewsletterVersionRequest)
 
 	if err := c.BodyParser(nlvr); err != nil {
-		return err
+		utils.ErrorLog(err)
+		return c.Status(int(BodyError.code)).JSON(fiber.Map{"ok": false, "message": BodyError.message})
 	}
 
 	newsletterVersion := models.NewsletterVersion{
@@ -63,7 +64,11 @@ func CreateNewsletterVersion(c *fiber.Ctx) error {
 		NewsletterID: uint(newsletterID),
 	}
 
-	models.DB.Create(&newsletterVersion)
+	result := models.DB.Create(&newsletterVersion)
+	if result.Error != nil {
+		utils.ErrorLog(result.Error)
+		return c.Status(int(DatabaseError.code)).JSON(fiber.Map{"ok": false, "message": DatabaseError.message})
+	}
 
 	return c.JSON(newsletterVersion)
 }
@@ -78,8 +83,8 @@ func UpdateNewsletterVersion(c *fiber.Ctx) error {
 	newsletterVersionID, err := c.ParamsInt("newsletter_version_id")
 
 	if err != nil {
-		fmt.Println(err)
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"ok": false, "message": err.Error()})
+		utils.ErrorLog(err)
+		return c.Status(int(ParamsError.code)).JSON(fiber.Map{"ok": false, "message": ParamsError.message})
 	}
 
 	file, err := c.FormFile("file")
@@ -94,7 +99,8 @@ func UpdateNewsletterVersion(c *fiber.Ctx) error {
 	nlvr := new(NewsletterVersionUpdateRequest)
 
 	if err := c.BodyParser(nlvr); err != nil {
-		return err
+		utils.ErrorLog(err)
+		return c.Status(int(BodyError.code)).JSON(fiber.Map{"ok": false, "message": BodyError.message})
 	}
 
 	newsletterVersion := models.NewsletterVersion{
@@ -103,7 +109,11 @@ func UpdateNewsletterVersion(c *fiber.Ctx) error {
 		File:    fileName,
 	}
 
-	models.DB.Where("id = ?", newsletterVersionID).Updates(&newsletterVersion)
+	result := models.DB.Where("id = ?", newsletterVersionID).Updates(&newsletterVersion)
+	if result.Error != nil {
+		utils.ErrorLog(result.Error)
+		return c.Status(int(DatabaseError.code)).JSON(fiber.Map{"ok": false, "message": DatabaseError.message})
+	}
 
 	return c.JSON(newsletterVersion)
 }
@@ -112,11 +122,15 @@ func DeleteNewsletterVersion(c *fiber.Ctx) error {
 	newsletterVersionID, err := c.ParamsInt("newsletter_version_id")
 
 	if err != nil {
-		fmt.Println(err)
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"ok": false, "message": err.Error()})
+		utils.ErrorLog(err)
+		return c.Status(int(ParamsError.code)).JSON(fiber.Map{"ok": false, "message": ParamsError.message})
 	}
 
-	models.DB.Where("id = ?", newsletterVersionID).Delete(&models.NewsletterVersion{})
+	result := models.DB.Where("id = ?", newsletterVersionID).Delete(&models.NewsletterVersion{})
+	if result.Error != nil {
+		utils.ErrorLog(result.Error)
+		return c.Status(int(DatabaseError.code)).JSON(fiber.Map{"ok": false, "message": DatabaseError.message})
+	}
 
 	return c.JSON(fiber.Map{"ok": true, "message": "deleted"})
 }
@@ -124,18 +138,25 @@ func DeleteNewsletterVersion(c *fiber.Ctx) error {
 func SendNewsletter(c *fiber.Ctx) error {
 	newsletterVersionID, err := c.ParamsInt("newsletter_version_id")
 	if err != nil {
-		fmt.Println(err)
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"ok": false, "message": err.Error()})
+		utils.ErrorLog(err)
+		return c.Status(int(ParamsError.code)).JSON(fiber.Map{"ok": false, "message": ParamsError.message})
 	}
 
 	var newsletterVersion models.NewsletterVersion
-	models.DB.First(&newsletterVersion, newsletterVersionID)
+	result := models.DB.First(&newsletterVersion, newsletterVersionID)
+	if result.Error != nil {
+		utils.ErrorLog(result.Error)
+		return c.Status(int(DatabaseError.code)).JSON(fiber.Map{"ok": false, "message": DatabaseError.message})
+	}
 
 	var newsletter models.Newsletter
-	models.DB.Model(&models.Newsletter{}).Preload("Recipients").Find(&newsletter, "id = ?", newsletterVersion.NewsletterID)
+	result = models.DB.Model(&models.Newsletter{}).Preload("Recipients").Find(&newsletter, "id = ?", newsletterVersion.NewsletterID)
+	if result.Error != nil {
+		utils.ErrorLog(result.Error)
+		return c.Status(int(DatabaseError.code)).JSON(fiber.Map{"ok": false, "message": DatabaseError.message})
+	}
 
 	for _, recipient := range newsletter.Recipients {
-		fmt.Println("recipient: ", recipient)
 
 		to := recipient.Email
 		name := recipient.Name
@@ -160,7 +181,10 @@ func SendNewsletter(c *fiber.Ctx) error {
 	}
 
 	// update email sent
-	models.DB.Model(&models.NewsletterVersion{}).Where("id = ?", newsletterVersionID).Update("sent", true)
+	result = models.DB.Model(&models.NewsletterVersion{}).Where("id = ?", newsletterVersionID).Update("sent", true)
+	if result.Error != nil {
+		utils.ErrorLog(result.Error)
+	}
 
 	return c.JSON(fiber.Map{"ok": true, "message": "email sent"})
 
