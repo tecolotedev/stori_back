@@ -18,9 +18,11 @@ type Email struct {
 
 type NewsletterEmail struct {
 	Email
-	Name    string
-	File    string
-	Content string
+	Name         string
+	File         string
+	Content      string
+	UserID       int
+	NewsletterID int
 }
 
 type EmailHandlerStruct struct {
@@ -57,7 +59,7 @@ func (e *EmailHandlerStruct) InitDialer() {
 }
 
 func sendNewsletterEmail(email NewsletterEmail) {
-	htmlContent := GetNewsletterHTMLBody(email.Name, email.Content)
+	htmlContent := GetNewsletterHTMLBody(email.Name, email.Content, email.UserID, email.NewsletterID)
 	sendEmail(email.To, email.Subject, email.File, htmlContent)
 
 }

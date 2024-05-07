@@ -171,9 +171,11 @@ func SendNewsletter(c *fiber.Ctx) error {
 				To:      to,
 				Subject: subject,
 			},
-			File:    file,
-			Name:    name,
-			Content: content,
+			File:         file,
+			Name:         name,
+			Content:      content,
+			UserID:       int(recipient.ID),
+			NewsletterID: int(newsletter.ID),
 		}
 
 		email.EmailHandler.NewsletterEmailChan <- newEmail

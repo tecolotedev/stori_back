@@ -30,6 +30,20 @@
                 text-wrap: wrap;
             }
 
+            #button-container{
+                display: flex;
+                justify-content: center;
+            }
+
+            #button-container button{
+                background-color: #6bcaff;
+                padding:10px;
+                width: 100px;
+                border-radius: 10px;
+                cursor: pointer;
+
+            }
+
         </style>
     </head>
     <body>
@@ -51,6 +65,12 @@
                             <p style="margin:0;margin-bottom:0">Puedes encontrar mas información a continuación: </p>
                             <p style="margin-top: 10px;margin-bottom:0">{{.Content}}</p>
                         </div>
+                    </div>
+
+                    <div id="button-container">
+                        <a target="_blank" href="{{.URL}}">
+                            <button>Unsubscribe</button>
+                        </a>
                     </div>
                 </div>
             </div>
